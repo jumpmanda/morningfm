@@ -1,0 +1,42 @@
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #E01A76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.mfm-veil {
+    position: absolute;
+    background-color: grey;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+}
+
+.mfm-login-signup-form {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 10px 10px 5px #aaaaaa;
+    border-radius: 5px;
+}
+
+.mfm-show-card {
+    min-width: 50%;
+}
