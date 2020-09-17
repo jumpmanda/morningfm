@@ -68,5 +68,39 @@ namespace MorningFM.Controllers
             return Ok(results);
         }
 
+        [HttpGet("{sessionToken}/recommended-tracks")]
+        public async Task<IActionResult> GetRecommendedTracks(string sessionToken)
+        {
+            if (string.IsNullOrEmpty(sessionToken))
+            {
+                return BadRequest("Must provide session token.");
+            }
+            var sessionResults = await _sessionRepo.GetAsync<Session>(s => s.Token == Guid.Parse(sessionToken));
+            if (sessionResults.Count == 0)
+            {
+                return BadRequest("Could not retrieve tracks. Bad session.");
+            }
+            var session = sessionResults[0];
+            var results = await _spotifyHandler.GetRecommendedTracks(session.spotifyAccess.AccessToken);
+            return Ok(results);
+        }
+
+        [HttpPost("{sessionToken}/recommended-playlist")]
+        public async Task<IActionResult> CreatePlaylist(string sessionToken)
+        {
+            if (string.IsNullOrEmpty(sessionToken))
+            {
+                return BadRequest("Must provide session token.");
+            }
+            var sessionResults = await _sessionRepo.GetAsync<Session>(s => s.Token == Guid.Parse(sessionToken));
+            if (sessionResults.Count == 0)
+            {
+                return BadRequest("Could not retrieve tracks. Bad session.");
+            }
+            var session = sessionResults[0];
+            await _spotifyHandler.CreateRecommendedPlaylist(session.spotifyAccess.AccessToken);
+            return Ok();
+        }
+
     }
 }

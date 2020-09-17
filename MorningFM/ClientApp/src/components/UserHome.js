@@ -33,11 +33,10 @@ export class UserHome extends React.Component{
     }
 
     getUserShows() {
-        fetch("api/library/" + this.state.sessionToken + "/top-tracks")
+        fetch("api/library/" + this.state.sessionToken + "/shows")
             .then(res => {
                 res.json().then(json => {                   
-                    //var shows = json.map(item => { return new PodcastShows(item.show.id, item.show.name, item.show.images) });                  
-                    var shows = json.map(item => { return new PodcastShows(item.id, item.name, item.album.images) });                  
+                    var shows = json.map(item => { return new PodcastShows(item.show.id, item.show.name, item.show.images) });
                     this.setState({ podcastShows: shows }); 
                     }
                     );
@@ -62,7 +61,9 @@ export class UserHome extends React.Component{
             </Col>); 
         }
         return <div>
-            <h1>Here are all the silly little songs you listen to</h1>      
+            <h1>Build your own morning radio show</h1>
+            <h4>Podcasts</h4>
+            <h5>Select shows to include: </h5>     
             <Container>
                 <Row>
                     {items}  

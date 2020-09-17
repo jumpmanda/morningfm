@@ -34,7 +34,7 @@ namespace MorningFM.Logic
         private protected string _clientSecret { private get; set; } //TODO: Don't do this!!!! Simply store secrets somewhere else!
         private const string _responseType = "code";
         private const string _redirectUri = "http://localhost:5000/api/authentication/callback";
-        private const string _scope = "user-read-private user-read-email user-library-read user-top-read";
+        private const string _scope = "user-read-private user-read-email user-library-read user-top-read playlist-modify-public playlist-modify-private";
         private HttpClient _httpClient; 
 
         public SpotifyAuthorization(string clientId, string clientSecret)

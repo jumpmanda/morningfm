@@ -50,4 +50,13 @@ namespace MorningFM.Logic.DTOs.Spotify
         [DataMember(Name ="items")]
         public Track[] Items { get; set; }
     }
+
+
+    [DataContract]
+    public class RecommendationsBlob
+    {
+        [DataMember(Name = "tracks")]
+        public Track[] Tracks { get; set; }
+    }
+
 }
