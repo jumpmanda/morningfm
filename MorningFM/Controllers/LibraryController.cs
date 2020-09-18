@@ -9,6 +9,7 @@ using MorningFM.Logic;
 using MorningFM.Logic.Repositories;
 using MorningFM.Logic.DTOs;
 using MorningFM.Logic.Repository;
+using System.Runtime.InteropServices;
 
 namespace MorningFM.Controllers
 {
@@ -86,7 +87,7 @@ namespace MorningFM.Controllers
         }
 
         [HttpPost("{sessionToken}/recommended-playlist")]
-        public async Task<IActionResult> CreatePlaylist(string sessionToken)
+        public async Task<IActionResult> CreatePlaylist(string sessionToken, [FromBody] MorningShowRequest showRequest)
         {
             if (string.IsNullOrEmpty(sessionToken))
             {
@@ -98,8 +99,24 @@ namespace MorningFM.Controllers
                 return BadRequest("Could not retrieve tracks. Bad session.");
             }
             var session = sessionResults[0];
-            await _spotifyHandler.CreateRecommendedPlaylist(session.spotifyAccess.AccessToken);
-            return Ok();
+            var playlistId = await _spotifyHandler.CreateRecommendedPlaylist(session.spotifyAccess.AccessToken);
+
+            //todo: take in show ids to fetch episodes and add to playlist
+
+            if(showRequest == null)
+            {
+                return BadRequest("Invalid request.");
+            }
+            if(showRequest.ShowIds == null || showRequest.ShowIds.Length == 0)
+            {
+                return BadRequest("Must provide at least 1 podcast episode to add.");
+            }
+
+            var episodesResults = await _spotifyHandler.GetLatestEpisodes(session.spotifyAccess.AccessToken, showRequest.ShowIds);
+            var episodeIds = episodesResults.Select(e => $"spotify:episode:{e}").ToArray();
+            var completed = await _spotifyHandler.AddTrackToPlaylistWithPosition(session.spotifyAccess.AccessToken, playlistId, episodeIds); 
+
+            return Ok(new { playlistId = playlistId });
         }
 
     }

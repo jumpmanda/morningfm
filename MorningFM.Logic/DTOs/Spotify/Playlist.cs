@@ -37,8 +37,19 @@ namespace MorningFM.Logic.DTOs.Spotify
         [DataMember(Name = "public")]
         public bool PublicMode { get; set; }
 
+        [DataMember(Name = "external_urls")]
+        public PlaylistExternalUrl ExternalUrls { get; set; }
+
         //TODO: Requires some finessing - could be either track or episode
         //[DataMember(Name = "public")]
         //public Track[] Tracks { get; set; }
     }
+
+    [DataContract]
+    public class PlaylistExternalUrl
+    {
+        [DataMember(Name ="spotify")]
+        public string SpotifyUrl { get; set; }
+    }
+
 }

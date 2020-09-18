@@ -38,5 +38,16 @@ code {
 }
 
 .mfm-show-card {
-    min-width: 50%;
+    min-width: 200px;
+    max-width: 200px;
+    margin: 1rem;
+}
+
+.selected-card {
+    border: 5px #9efdff solid;
+}
+
+.app-button-right {
+    right: 50px;
+    position: absolute;    
 }

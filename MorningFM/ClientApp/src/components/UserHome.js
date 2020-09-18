@@ -1,5 +1,6 @@
 import React, { Component, useContext } from 'react';
-import { Card, CardImg, CardBody, CardTitle, Container, Row, Col } from 'reactstrap';
+import { Card, CardImg, CardBody, CardTitle, Container, Row, Col, Button } from 'reactstrap';
+import loadingImg from '../assets/cool-loading1.gif';
 
 class PodcastShows {
     constructor(id, name, images) {
@@ -9,18 +10,21 @@ class PodcastShows {
     }
 }
 
-export class UserHome extends React.Component{
-    constructor(props){
-        super(props);                 
+export class UserHome extends React.Component {
+    constructor(props) {
+        super(props);
         this.state = {
             sessionToken: '',
             isError: false,
-            podcastShows: []
+            podcastShows: [],
+            selectedShows: [],
+            generatedPlaylist: ''
         };
+        this.handleShowSelectionSubmit = this.handleShowSelectionSubmit.bind(this);
     }
 
-    async getSessionFromUrl() {            
-        var index = this.props.location.search.indexOf('?token='); 
+    async getSessionFromUrl() {
+        var index = this.props.location.search.indexOf('?token=');
         var sessionToken = this.props.location.search.substring(index + 7, index + 7 + 36);
         return sessionToken;
     }
@@ -35,24 +39,65 @@ export class UserHome extends React.Component{
     getUserShows() {
         fetch("api/library/" + this.state.sessionToken + "/shows")
             .then(res => {
-                res.json().then(json => {                   
+                res.json().then(json => {
                     var shows = json.map(item => { return new PodcastShows(item.show.id, item.show.name, item.show.images) });
-                    this.setState({ podcastShows: shows }); 
-                    }
-                    );
-                },
+                    this.setState({ podcastShows: shows });
+                }
+                );
+            },
                 err => {
                     this.setState({ isError: true, errorMessage: err });
                     console.log(err);
                 });
-        }
+    }
 
-    render() {
+    toggleShowCard(e, index) {
+        var selectedShows = this.state.selectedShows;
+        var existingIndex = selectedShows.indexOf(index);
+        if (existingIndex == -1) {
+            selectedShows.push(index);
+        }
+        else {
+            selectedShows.splice(existingIndex, 1);
+        }
+        this.setState({ selectedShows: selectedShows });
+    }
+
+    handleShowSelectionSubmit() {
+        this.setState({ isLoading: true });
+
+        var selectedShowIds = this.state.selectedShows.map((value) => { return this.state.podcastShows[value].id; });
+        console.log(selectedShowIds);
+
+        //todo make api call to build playlist and show results to user in ui
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ showIds: selectedShowIds })
+        };
+
+        fetch("api/library/" + this.state.sessionToken + "/recommended-playlist", requestOptions)
+            .then(res => {
+                res.json().then(json => {
+                    console.log(json);
+                    this.setState({ generatedPlaylist: json.playlistId, isLoading: false });
+                }
+                );
+            },
+                err => {
+                    this.setState({ isError: true });
+                    this.setState({ isLoading: false });
+                    console.log(err);
+                });
+
+    }
+
+    render() {        
         const shows = this.state.podcastShows;
         const items = []; 
         for (const [index, value] of shows.entries()) {
             items.push(<Col>
-                <Card className="mfm-show-card" key={index}>
+                <Card className={`mfm-show-card ${this.state.selectedShows.indexOf(index) == -1 ? '' : 'selected-card'}`} key={index} onClick={(e) => this.toggleShowCard(e, index)} id={"card-" + index}>
                     <CardImg top width="100%" src={value.images[0].url} alt="Show Image" />
                     <CardBody>
                         <CardTitle>{value.name}</CardTitle>
@@ -60,15 +105,35 @@ export class UserHome extends React.Component{
                 </Card>
             </Col>); 
         }
-        return <div>
-            <h1>Build your own morning radio show</h1>
-            <h4>Podcasts</h4>
-            <h5>Select shows to include: </h5>     
-            <Container>
+        const isLoading = this.state.isLoading;
+        const needToBuild = this.state.generatedPlaylist == null || this.state.generatedPlaylist == "";
+        let content;
+        if (needToBuild) {
+            content = <Container>
+                <Row><h1>Build your own morning radio show</h1></Row>
+                <Row>    <h4>Podcasts</h4></Row>
                 <Row>
-                    {items}  
-                </Row>                   
-            </Container>           
+                    <Col> <h5>Select shows to include: </h5>    </Col>
+                    <Col><Button className="app-button-right" onClick={this.handleShowSelectionSubmit} color={this.state.selectedShows.length > 0 ? 'primary' : 'secondary'} disabled={this.state.selectedShows.length <= 0}>Generate</Button></Col>
+                </Row>
+                <Row>
+                    {items}
+                </Row>
+            </Container>;
+        }
+        else {
+            if (isLoading) {
+                content = <img src={loadingImg}></img>;
+            }
+            else {
+                content = <div>
+                    <h1>Playlist created!</h1>
+                    <iframe src={"https://open.spotify.com/embed?uri=spotify:playlist:" + this.state.generatedPlaylist} width="300" height="380" frameBorder="0" allowtransparency="true"></iframe>
+                </div>;
+            }
+        }
+        return <div>
+            {content}
         </div>;
     }
 }

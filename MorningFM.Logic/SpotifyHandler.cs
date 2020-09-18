@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,6 +14,7 @@ namespace MorningFM.Logic
 {
     public class SpotifyHandler
     {
+        private readonly object listLock = new object();
         private HttpClient _httpClient; 
         private HttpHandler _http; 
 
@@ -91,34 +93,58 @@ namespace MorningFM.Logic
 
             var trackList = trackBlob.Select(t => $"spotify:track:{t.Id}").ToArray();
 
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Post, addTracksRequest);
-            httpRequest.Content = new StringContent(JsonConvert.SerializeObject(new { uris = trackList }), Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.SendAsync(httpRequest);
-            var payload = await response.Content.ReadAsStringAsync();
+            var isAdded = await AddTrackToPlaylist(accessToken, blob.Id, trackList);
 
             return blob?.Id; 
             
         }
 
-        public async Task<bool> AddTrackToPlaylist(string accessToken, string playlistId, string trackId)
+        public async Task<bool> AddTrackToPlaylist(string accessToken, string playlistId, string trackId, int position)
         {
-            //add recommended tracks to playlist 
             var addTracksRequest = $"https://api.spotify.com/v1/playlists/{playlistId}/tracks";
+            var status = await _http.Post(accessToken, addTracksRequest, JsonConvert.SerializeObject(new { uris = new string[] { trackId }, position = position }));
+            return status == HttpStatusCode.OK || status == HttpStatusCode.NoContent;
+        }
 
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        public async Task<bool> AddTrackToPlaylist(string accessToken, string playlistId, string[] trackIds)
+        {
+            var addTracksRequest = $"https://api.spotify.com/v1/playlists/{playlistId}/tracks";
+            var status = await _http.Post(accessToken, addTracksRequest, JsonConvert.SerializeObject(new { uris = trackIds }));
+            return status == HttpStatusCode.OK || status == HttpStatusCode.NoContent;
+        }
 
-            HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Post, addTracksRequest);
-            httpRequest.Content = new StringContent(JsonConvert.SerializeObject(new { uris = new[] { trackId }, position = 4 }), Encoding.UTF8, "application/json");
+        public async Task<int> AddTrackToPlaylistWithPosition(string accessToken, string playlistId, string[] trackIds)
+        {
+            var failCount = 0; 
+            for(int i = 0; i < trackIds.Length; i++)
+            {
+                var success = await AddTrackToPlaylist(accessToken, playlistId, trackIds[i], (i + 1) * 2);
+                if (success) failCount++; 
+            }
+            return failCount; 
+        }
 
-            var response = await _httpClient.SendAsync(httpRequest);
-            var payload = await response.Content.ReadAsStringAsync();
+        public async Task<string[]> GetLatestEpisodes(string accessToken, string[] showIds)
+        {
+            List<string> episodes = new List<string>();   
 
-            return response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent; 
+           foreach(var showId in showIds)
+            {
+                var request = $"https://api.spotify.com/v1/shows/{showId}/episodes";
+                var payload = await _http.Get<EpisodeBlob>(accessToken, request);
+                var results = payload?.Items;
+                results.ToList().Sort((x, y) => DateTime.Compare(
+                    DateTime.ParseExact(x.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    DateTime.ParseExact(y.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)));
+
+                //Check release date for most recent episode
+                if (results != null)
+                {
+                    episodes.Add(results[0].Id);
+                }
+            }
+
+            return episodes.ToArray();
         }
 
     }
