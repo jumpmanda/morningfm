@@ -22,20 +22,21 @@ namespace MorningFM.Controllers
     {
         #region Properties
         private static SpotifyAuthorization _spotifyAuthorization;
-        private SpotifyHandler _spotifyHandler;
         private IRepository<User> _repo;
         private IRepository<Session> _sessionRepo;
         private ILogger _logger;
         #endregion
 
         #region Construction 
-        public UserAuthenticationController(IConfiguration configuration, MorningFMRepository<User> repo, MorningFMRepository<Session> sessionRepo, ILogger<UserAuthenticationController> logger)
+        public UserAuthenticationController(IConfiguration configuration, 
+            MorningFMRepository<User> repo, 
+            MorningFMRepository<Session> sessionRepo, 
+            ILogger<UserAuthenticationController> logger, SpotifyAuthorization spotifyAuthorization)
         {
-            _spotifyAuthorization = new SpotifyAuthorization(configuration.GetValue<string>("Spotify:ClientId"), configuration.GetValue<string>("Spotify:ClientSecret"));
-            _spotifyHandler = new SpotifyHandler();
-            _repo = repo ?? throw new ArgumentException("User repository is not initialized.");
-            _sessionRepo = sessionRepo ?? throw new ArgumentException("Session repository is not initialized.");
             _logger = logger ?? throw new ArgumentException("Logger is not initialized.");
+            _spotifyAuthorization = spotifyAuthorization ?? throw new ArgumentException("Spotify authorization is not initialized.");
+            _repo = repo ?? throw new ArgumentException("User repository is not initialized.");
+            _sessionRepo = sessionRepo ?? throw new ArgumentException("Session repository is not initialized.");       
         }
         #endregion 
 
@@ -59,7 +60,7 @@ namespace MorningFM.Controllers
                         var basicAuth = System.Convert.ToBase64String(plainTextBytes);
                         //TODO: Do better job at saving credentials; use some salting perhaps...
                         await _repo.AddAsync(new User() { Email = loginRequest.Email, Password = basicAuth });
-                        _logger.LogInformation($"New user added {loginRequest.Email}"); 
+                        _logger.LogInformation(new EventId((int)MorningFMEventId.UserAuthentication), $"New user added {loginRequest.Email}"); 
                     }
                     catch
                     {
@@ -89,7 +90,8 @@ namespace MorningFM.Controllers
                    
                 }
                 
-                var url = _spotifyAuthorization.GetLoginPage().ToString(); 
+                var url = _spotifyAuthorization.GetLoginPage().ToString();
+                _logger.LogInformation(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
                 return Ok(new { redirectUrl = url}); 
             }
             catch(Exception e)
@@ -104,6 +106,7 @@ namespace MorningFM.Controllers
         {
             StringValues code;
             Request.Query.TryGetValue("code", out code);
+            _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), "Spotify provided authorization code in callback.");
 
             try
             {

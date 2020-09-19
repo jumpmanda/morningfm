@@ -1,3 +1,4 @@
+using DnsClient.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -5,9 +6,12 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using MorningFM.Logic;
 using MorningFM.Logic.DTOs;
 using MorningFM.Logic.Repositories;
 using MorningFM.Logic.Repository;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace MorningFM
@@ -34,6 +38,23 @@ namespace MorningFM
             });
             services.AddSingleton<MorningFMRepository<Session>>((provider) => {
                 return new MorningFMRepository<Session>("mongodb://localhost:27017", "morningfm-library", "sessions");
+            });
+
+            services.AddTransient<HttpHandler>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var logger = serviceProvider.GetService<ILogger<SpotifyAuthorization>>();
+            services.AddSingleton(typeof(Microsoft.Extensions.Logging.ILogger), logger);
+            var logger2 = serviceProvider.GetService<ILogger<SpotifyHandler>>();
+            services.AddSingleton(typeof(Microsoft.Extensions.Logging.ILogger), logger2);
+
+            services.AddTransient<SpotifyHandler>((provider)=> {
+                return new SpotifyHandler(provider.GetService<ILogger<SpotifyHandler>>(), provider.GetService<HttpHandler>());
+            });
+
+            services.AddTransient<SpotifyAuthorization>((provider) => { 
+            return new SpotifyAuthorization(Configuration.GetValue<string>("Spotify:ClientId"), Configuration.GetValue<string>("Spotify:ClientSecret"), provider.GetService<ILogger<SpotifyAuthorization>>());
             });
 
             // In production, the React files will be served from this directory

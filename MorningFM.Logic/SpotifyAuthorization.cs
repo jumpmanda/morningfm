@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -30,6 +31,7 @@ namespace MorningFM.Logic
 
     public class SpotifyAuthorization
     {
+        private ILogger _logger; 
         private protected string _clientId { private get; set; }
         private protected string _clientSecret { private get; set; } //TODO: Don't do this!!!! Simply store secrets somewhere else!
         private const string _responseType = "code";
@@ -37,13 +39,14 @@ namespace MorningFM.Logic
         private const string _scope = "user-read-private user-read-email user-library-read user-top-read playlist-modify-public playlist-modify-private user-read-playback-position";
         private HttpClient _httpClient; 
 
-        public SpotifyAuthorization(string clientId, string clientSecret)
+        public SpotifyAuthorization(string clientId, string clientSecret, ILogger<SpotifyAuthorization> logger)
         {
             if (string.IsNullOrEmpty(clientId)) throw new ArgumentNullException("ClientId was not provided.");
             if (string.IsNullOrEmpty(clientSecret)) throw new ArgumentNullException("ClientSecret was not provided.");
+            _logger = logger ?? throw new ArgumentNullException("Logger not provided.");
             _clientId = clientId;
             _clientSecret = clientSecret;
-            _httpClient = new HttpClient(); 
+            _httpClient = new HttpClient();           
         }
 
         public string GetLoginPage()
@@ -69,8 +72,13 @@ namespace MorningFM.Logic
             content.Headers.ContentType.MediaType = "application/x-www-form-urlencoded"; 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basicAuth);
 
-            var response = _httpClient.PostAsync(uri, content);
-            var payload =  await response.Result.Content.ReadAsStringAsync();
+            var response = await _httpClient.PostAsync(uri, content);
+            var payload =  await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Http response unsuccessful. Status: {response.StatusCode} Message: {payload}");
+            }
 
             return JsonConvert.DeserializeObject<SpotifyAccessBlob>(payload);           
 

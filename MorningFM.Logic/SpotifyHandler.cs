@@ -1,4 +1,5 @@
-﻿using MorningFM.Logic.DTOs.Spotify;
+﻿using Microsoft.Extensions.Logging;
+using MorningFM.Logic.DTOs.Spotify;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,35 +15,22 @@ namespace MorningFM.Logic
 {
     public class SpotifyHandler
     {
+        private ILogger _logger;
         private readonly object listLock = new object();
         private HttpClient _httpClient; 
         private HttpHandler _http; 
 
-        public SpotifyHandler()
+        public SpotifyHandler(ILogger<SpotifyHandler> logger, HttpHandler httpHandler)
         {
+            _logger = logger ?? throw new ArgumentNullException("Logger not provided.");
             _httpClient = new HttpClient();
-            _http = new HttpHandler(); 
-        }
-
-        public async Task<string> GetPlaylists(string accessToken)
-        {
-            var playlistAccessToken = "BQDMXhBY7hGKyAllacMzzywwRfKVUcfQXUHZqt7Y8qYIYOT_wgLyG-ifj4O0fAQ9rriV9ObjjStsaX_gFmKjQ7k8mudCo1rFD7N74uMfBZOlD85m3bFjz7k9NgeC28LEHQh2FJEA5NdlBJtIz8KTityzXRkOdx_aXcJd7Wi07mlRzIHZLTZ4f2tXEPU";
-            var request = $@"https://api.spotify.com/v1/me/playlists";
-
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", playlistAccessToken);
-
-            HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, request);
-            httpRequest.Content = new StringContent("", Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.SendAsync(httpRequest);
-
-            return await response.Content.ReadAsStringAsync();
+            _http = httpHandler ?? throw new ArgumentNullException("httpHandler not provided.");
         }
 
         public async Task<UserProfile> GetUserInfo(string accessToken){
             var request = $@"https://api.spotify.com/v1/me";
             var blob = await _http.Get<UserProfile>(accessToken, request);
+            _logger.LogInformation(new EventId((int) MorningFMEventId.SpotifyAPI), "Fetching user info"); 
             return blob; 
         }
 
@@ -50,6 +38,7 @@ namespace MorningFM.Logic
         {
             var request = $@"https://api.spotify.com/v1/me/shows";
             var blob = await _http.Get<SavedShowBlob>(accessToken, request);
+            _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), "Fetching user shows.");
             return blob?.Items;
         }
 
@@ -57,6 +46,7 @@ namespace MorningFM.Logic
         {
             var request = $@"https://api.spotify.com/v1/me/top/tracks";
             var blob = await _http.Get<TrackBlob>(accessToken, request);
+            _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), "Fetching user top tracks");
             return blob?.Items; 
         }
 
@@ -75,6 +65,7 @@ namespace MorningFM.Logic
             request += System.Web.HttpUtility.UrlEncode(res);
 
             var blob = await _http.Get<RecommendationsBlob>(accessToken, request);
+            _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), "Fetching user recommended tracks");
             return blob?.Tracks; 
         }
 
@@ -86,9 +77,9 @@ namespace MorningFM.Logic
             //create new playlist
             var request = $@"https://api.spotify.com/v1/users/{userProfile.Id}/playlists";
             var blob = await _http.Post<Playlist>(accessToken, request, JsonConvert.SerializeObject(new PlaylistRequest() { Name="MorningFM-Test", PublicMode=true, Description="Here's a playlist with recommended tracks and your latest podcast episodes!" }));
-
-            //add recommended tracks to playlist 
+            _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Creating new user {userProfile.Id} playlist"); 
             var addTracksRequest = $"https://api.spotify.com/v1/playlists/{blob.Id}/tracks"; 
+            
             var trackBlob = await GetRecommendedTracks(accessToken);
 
             var trackList = trackBlob.Select(t => $"spotify:track:{t.Id}").ToArray();
@@ -103,6 +94,7 @@ namespace MorningFM.Logic
         {
             var addTracksRequest = $"https://api.spotify.com/v1/playlists/{playlistId}/tracks";
             var status = await _http.Post(accessToken, addTracksRequest, JsonConvert.SerializeObject(new { uris = new string[] { trackId }, position = position }));
+            _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Adding track {trackId} to playlist {playlistId} .");
             return status == HttpStatusCode.OK || status == HttpStatusCode.NoContent;
         }
 
@@ -132,6 +124,8 @@ namespace MorningFM.Logic
             {
                 var request = $"https://api.spotify.com/v1/shows/{showId}/episodes";
                 var payload = await _http.Get<EpisodeBlob>(accessToken, request);
+                _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), $"Fetching show episodes {showId}.");
+
                 var results = payload?.Items;
                 results.ToList().Sort((x, y) => DateTime.Compare(
                     DateTime.ParseExact(x.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
