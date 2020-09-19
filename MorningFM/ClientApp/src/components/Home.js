@@ -18,7 +18,7 @@ export class Home extends Component {
   render () {
     return (
       <Container>
-         <Jumbotron fluid>
+         <Jumbotron fluid className="app-home-jumbotron">
           <Container fluid>
             <h1 className="display-3">Personalized radio to start your morning.</h1>
             <p className="lead">Connect with Spotify to queue up your daily podcast episodes, with recommended music in between.</p>

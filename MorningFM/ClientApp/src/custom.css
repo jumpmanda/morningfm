@@ -33,7 +33,7 @@ code {
     width: 40%;
     background-color: white;
     padding: 1rem;
-    box-shadow: 10px 10px 5px #aaaaaa;
+    box-shadow: 5px 5px 5px #1A1A1A;
     border-radius: 5px;
 }
 
@@ -50,4 +50,22 @@ code {
 .app-button-right {
     right: 50px;
     position: absolute;    
+}
+
+.app-img{
+    max-width: 60%;
+}
+
+.app-loading-content {
+    display: flex;
+    align-items: center;
+}
+
+.app-home-jumbotron{
+    background-image: url("assets/background.png");
+    color: white;
+}
+
+.app-items-center {
+    flex-direction: column;
 }

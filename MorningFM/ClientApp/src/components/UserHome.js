@@ -1,6 +1,7 @@
 import React, { Component, useContext } from 'react';
 import { Card, CardImg, CardBody, CardTitle, Container, Row, Col, Button } from 'reactstrap';
 import loadingImg from '../assets/cool-loading1.gif';
+import loadingImg2 from '../assets/cool-loading2.gif';
 
 class PodcastShows {
     constructor(id, name, images) {
@@ -18,7 +19,10 @@ export class UserHome extends React.Component {
             isError: false,
             podcastShows: [],
             selectedShows: [],
-            generatedPlaylist: ''
+            generatedPlaylist: '',
+            isLoading: true,
+            loadingMessage: 'Starting up.... just a sec...',
+            isFrameLoaded: false
         };
         this.handleShowSelectionSubmit = this.handleShowSelectionSubmit.bind(this);
     }
@@ -41,7 +45,7 @@ export class UserHome extends React.Component {
             .then(res => {
                 res.json().then(json => {
                     var shows = json.map(item => { return new PodcastShows(item.show.id, item.show.name, item.show.images) });
-                    this.setState({ podcastShows: shows });
+                    this.setState({ podcastShows: shows, isLoading: false });
                 }
                 );
             },
@@ -65,6 +69,7 @@ export class UserHome extends React.Component {
 
     handleShowSelectionSubmit() {
         this.setState({ isLoading: true });
+        this.setState({ loadingMessage: 'Hacking, building, grabbing your playlist...' });
 
         var selectedShowIds = this.state.selectedShows.map((value) => { return this.state.podcastShows[value].id; });
         console.log(selectedShowIds);
@@ -80,13 +85,13 @@ export class UserHome extends React.Component {
             .then(res => {
                 res.json().then(json => {
                     console.log(json);
-                    this.setState({ generatedPlaylist: json.playlistId, isLoading: false });
+                    this.setState({ generatedPlaylist: json.playlistId, isLoading: false, loadingMessage: 'Grabbing preview window...' });
                 }
                 );
             },
                 err => {
                     this.setState({ isError: true });
-                    this.setState({ isLoading: false });
+                    this.setState({ isLoading: false, loadingMessage: '' });
                     console.log(err);
                 });
 
@@ -108,7 +113,13 @@ export class UserHome extends React.Component {
         const isLoading = this.state.isLoading;
         const needToBuild = this.state.generatedPlaylist == null || this.state.generatedPlaylist == "";
         let content;
-        if (needToBuild) {
+        if (isLoading) {
+            content = <div className="app-loading-content">
+                <img className="app-img" src={loadingImg2}></img>
+                <h3>{this.state.loadingMessage}</h3>
+            </div>;
+        }
+        else if (needToBuild) {
             content = <Container>
                 <Row><h1>Build your own morning radio show</h1></Row>
                 <Row>    <h4>Podcasts</h4></Row>
@@ -121,16 +132,13 @@ export class UserHome extends React.Component {
                 </Row>
             </Container>;
         }
-        else {
-            if (isLoading) {
-                content = <img src={loadingImg}></img>;
-            }
-            else {
-                content = <div>
-                    <h1>Playlist created!</h1>
-                    <iframe src={"https://open.spotify.com/embed?uri=spotify:playlist:" + this.state.generatedPlaylist} width="300" height="380" frameBorder="0" allowtransparency="true"></iframe>
-                </div>;
-            }
+        else {                   
+            content = <div className="app-loading-content app-items-center">
+                <h1>Playlist created!</h1>
+                <img className="app-img" src={loadingImg} style={{ display: this.state.isFrameLoaded ? 'none' : 'block' }}></img>
+                <h3 style={{ display: this.state.isFrameLoaded ? 'none' : 'block' }}>{this.state.loadingMessage}</h3>
+                <iframe onLoad={() => { this.setState({isFrameLoaded: true}); }} src={"https://open.spotify.com/embed?uri=spotify:playlist:" + this.state.generatedPlaylist} width="300" height="380" frameBorder="0" allowtransparency="true"></iframe>
+            </div>;          
         }
         return <div>
             {content}
