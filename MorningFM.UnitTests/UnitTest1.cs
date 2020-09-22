@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MorningFM.Logic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace MorningFM.UnitTests
         [TestMethod]
         public async Task GetTopTracks()
         {
-            var spotifyHandler = new SpotifyHandler();
+            //var spotifyHandler = new SpotifyHandler();
             //var results = await spotifyHandler.AddTrackToPlaylist(accessToken, "08Xxtgw50J4GyidsGn24ey", "spotify:episode:7aLTc5KoQuCvbe7uW7i9Z8"); 
             
             //Assert.IsNotNull(results);
@@ -27,21 +28,26 @@ namespace MorningFM.UnitTests
         [TestMethod]
         public async Task CreatePlaylist()
         {
-            var spotifyHandler = new SpotifyHandler();
-            await spotifyHandler.CreateRecommendedPlaylist(accessToken);
+            //var spotifyHandler = new SpotifyHandler();
+            //await spotifyHandler.CreateRecommendedPlaylist(accessToken);
          
         }
 
         [TestMethod]
         public async Task GetShowEpisodes()
         {
-            var spotifyHandler = new SpotifyHandler();
-            var showBlobs = await spotifyHandler.GetCurrentUserSavedShows(accessToken);
-            var showIds = showBlobs?.Take(5).Select(s => s.Show.Id).ToArray();
+            //var spotifyHandler = new SpotifyHandler();
+            //var showBlobs = await spotifyHandler.GetCurrentUserSavedShows(accessToken);
+            //var showIds = showBlobs?.Take(5).Select(s => s.Show.Id).ToArray();
 
-            var episodeIds = await spotifyHandler.GetLatestEpisodes(accessToken, showIds);
+            //var episodeIds = await spotifyHandler.GetLatestEpisodes(accessToken, showIds);
 
-            Assert.IsNotNull(episodeIds);
+            //Assert.IsNotNull(episodeIds);
+
+            var DT = DateTime.Today;
+
+            var output = DT.ToString("MM-dd") + "-2020";
+
 
         }
 

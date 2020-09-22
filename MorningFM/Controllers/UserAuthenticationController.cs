@@ -60,7 +60,7 @@ namespace MorningFM.Controllers
                         var basicAuth = System.Convert.ToBase64String(plainTextBytes);
                         //TODO: Do better job at saving credentials; use some salting perhaps...
                         await _repo.AddAsync(new User() { Email = loginRequest.Email, Password = basicAuth });
-                        _logger.LogInformation(new EventId((int)MorningFMEventId.UserAuthentication), $"New user added {loginRequest.Email}"); 
+                        _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), $"New user added {loginRequest.Email}"); 
                     }
                     catch
                     {
@@ -91,7 +91,7 @@ namespace MorningFM.Controllers
                 }
                 
                 var url = _spotifyAuthorization.GetLoginPage().ToString();
-                _logger.LogInformation(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
+                _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
                 return Ok(new { redirectUrl = url}); 
             }
             catch(Exception e)

@@ -76,7 +76,7 @@ namespace MorningFM.Logic
 
             //create new playlist
             var request = $@"https://api.spotify.com/v1/users/{userProfile.Id}/playlists";
-            var blob = await _http.Post<Playlist>(accessToken, request, JsonConvert.SerializeObject(new PlaylistRequest() { Name="MorningFM-Test", PublicMode=true, Description="Here's a playlist with recommended tracks and your latest podcast episodes!" }));
+            var blob = await _http.Post<Playlist>(accessToken, request, JsonConvert.SerializeObject(new PlaylistRequest() { Name=$"MorningFM-{DateTime.Today.ToString("MM-dd") + "-2020"}", PublicMode=true, Description="Here's a playlist with recommended tracks and your latest podcast episodes!" }));
             _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Creating new user {userProfile.Id} playlist"); 
             var addTracksRequest = $"https://api.spotify.com/v1/playlists/{blob.Id}/tracks"; 
             
