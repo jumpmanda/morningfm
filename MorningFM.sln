@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MorningFM", "MorningFM\Morn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MorningFM.Logic", "MorningFM.Logic\MorningFM.Logic.csproj", "{E51DBB9A-AF9F-4C04-96A2-3AB2F92BF53E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MorningFM.UnitTests", "MorningFM.UnitTests\MorningFM.UnitTests.csproj", "{7ED12064-EECA-49B9-BC2E-835BB3D9EAEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MorningFM.UnitTests", "MorningFM.UnitTests\MorningFM.UnitTests.csproj", "{7ED12064-EECA-49B9-BC2E-835BB3D9EAEF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48580F79-7720-4E4D-9846-6AF4AFF18A4F}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
