@@ -37,8 +37,8 @@ namespace MorningFM
                 {
                     logging.ClearProviders();
                     logging.SetMinimumLevel(LogLevel.Information);
-                })
-                .UseNLog();
+                });
+                //.UseNLog();
                
     }
 }

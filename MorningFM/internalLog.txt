@@ -6,3 +6,40 @@
 2020-10-15 21:19:10.1867 Info Adding target MongoTarget(Name=database)
 2020-10-15 21:19:10.2277 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\amand\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
 2020-10-15 21:19:12.0358 Info Connecting to MongoDB collection logs in database morningfm-library
+2020-10-15 21:47:13.0702 Info Message Template Auto Format enabled
+2020-10-15 21:47:13.0906 Info Loading assembly: NLog.Web.AspNetCore
+2020-10-15 21:47:13.0906 Info Loading assembly: NLog.Mongo
+2020-10-15 21:47:13.1723 Info Adding target FileTarget(Name=alldata)
+2020-10-15 21:47:13.1872 Info Adding target FileTarget(Name=otherFile-web)
+2020-10-15 21:47:13.2030 Info Adding target MongoTarget(Name=database)
+2020-10-15 21:47:13.2511 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\AH108577\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
+2020-10-15 21:47:19.1342 Info Connecting to MongoDB collection logs in database morningfm-library
+2020-10-15 21:58:00.9391 Info Message Template Auto Format enabled
+2020-10-15 21:58:00.9637 Info Loading assembly: NLog.Web.AspNetCore
+2020-10-15 21:58:00.9637 Info Loading assembly: NLog.Mongo
+2020-10-15 21:58:01.0347 Info Adding target FileTarget(Name=alldata)
+2020-10-15 21:58:01.0347 Info Adding target FileTarget(Name=otherFile-web)
+2020-10-15 21:58:01.0602 Info Adding target MongoTarget(Name=database)
+2020-10-15 21:58:01.1104 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\AH108577\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
+2020-10-15 21:58:19.6965 Info Connecting to MongoDB collection logs in database morningfm-library
+2020-10-15 22:03:07.1192 Info Message Template Auto Format enabled
+2020-10-15 22:03:07.1384 Info Loading assembly: NLog.Web.AspNetCore
+2020-10-15 22:03:07.1394 Info Loading assembly: NLog.Mongo
+2020-10-15 22:03:07.2179 Info Adding target FileTarget(Name=alldata)
+2020-10-15 22:03:07.2179 Info Adding target FileTarget(Name=otherFile-web)
+2020-10-15 22:03:07.2585 Info Adding target MongoTarget(Name=database)
+2020-10-15 22:03:07.3019 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\AH108577\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
+2020-10-15 22:05:53.4360 Info Message Template Auto Format enabled
+2020-10-15 22:05:53.4713 Info Loading assembly: NLog.Web.AspNetCore
+2020-10-15 22:05:53.4713 Info Loading assembly: NLog.Mongo
+2020-10-15 22:05:53.5509 Info Adding target FileTarget(Name=alldata)
+2020-10-15 22:05:53.5701 Info Adding target FileTarget(Name=otherFile-web)
+2020-10-15 22:05:53.5833 Info Adding target MongoTarget(Name=database)
+2020-10-15 22:05:53.6280 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\AH108577\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
+2020-10-16 14:12:34.9625 Info Message Template Auto Format enabled
+2020-10-16 14:12:34.9818 Info Loading assembly: NLog.Web.AspNetCore
+2020-10-16 14:12:34.9818 Info Loading assembly: NLog.Mongo
+2020-10-16 14:12:35.0519 Info Adding target FileTarget(Name=alldata)
+2020-10-16 14:12:35.0604 Info Adding target FileTarget(Name=otherFile-web)
+2020-10-16 14:12:35.0768 Info Adding target MongoTarget(Name=database)
+2020-10-16 14:12:35.1152 Info Validating config: TargetNames=alldata, database, otherFile-web, ConfigItems=62, FilePath=C:\Users\AH108577\Documents\GitHub\morningfm\MorningFM\bin\Debug\netcoreapp3.1\nlog.config
