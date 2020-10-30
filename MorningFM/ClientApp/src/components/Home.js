@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Jumbotron, Alert } from 'reactstrap';
-import UserAuthentication from './UserAuthentication';
 import rightImg from '../assets/radio.svg';
+import { Redirect } from 'react-router-dom'
 
 export class Home extends Component {
     static displayName = Home.name;   
@@ -9,9 +9,11 @@ export class Home extends Component {
         super(props);        
           this.state = {
               isGettingStarted: false,
-              showForm: false
+              showForm: false,
+              redirect: false
         }
-        this.closeAuthenticationForm = this.closeAuthenticationForm.bind(this);
+        this.renderAuthenticationRedirect = this.renderAuthenticationRedirect.bind(this);
+        this.setRedirect = this.setRedirect.bind(this);
     }  
 
     componentDidMount() {
@@ -21,8 +23,14 @@ export class Home extends Component {
         }
     }
 
-    closeAuthenticationForm() {
-        this.setState({showForm: false});
+    setRedirect() {
+        this.setState({redirect: true});
+    }
+
+    renderAuthenticationRedirect() {
+        if (this.state.redirect) {
+            return <Redirect to='/account' />;
+        }
     }
 
     render() {
@@ -41,9 +49,7 @@ export class Home extends Component {
                                     <div className={"mfm-button-neu " + (this.state.isGettingStarted ? "selected" : "")}
                                         onMouseDown={() => { this.setState({ isGettingStarted: true }); }}
                                         onMouseUp={() => { this.setState({ isGettingStarted: false }); }}
-                                        onClick={() => {
-                                            this.setState({ showForm: true });
-                                        }}>
+                                        onClick={this.setRedirect}>
                                         <h5>Getting Started</h5>
                                     </div>
                                 </Row>
@@ -54,7 +60,7 @@ export class Home extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <UserAuthentication showForm={this.state.showForm} onFormClose={this.closeAuthenticationForm}></UserAuthentication>
+                {this.renderAuthenticationRedirect()}
             </Row>
       </Container>
     );

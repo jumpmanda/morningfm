@@ -49,49 +49,15 @@ export default class UserAuthentication extends React.Component {
                     console.log(err);
                 });
     }
-    
-    closeForm() {
-        this.props.onFormClose(false);
-    }
 
     toggleTab(tab) {
         this.setState({ activeTab: tab, submitAction: tab == '1' ? 'LOGIN': 'SIGNUP' });
     }
 
     render() {
-        const showForm = this.props.showForm;
         const isError = this.state.isError;
-        let form;
         let errorbanner;
-        if (showForm) {
-            form =
-                <div className="mfm-login-signup-form">               
-                    <Nav tabs>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => this.toggleTab('1')}>
-                                Login
-                        </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={()=> this.toggleTab('2')}>
-                                Signup
-                          </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <Form onSubmit={this.handleSubmit}>
-                        <FormGroup>
-                            <Label for="exampleEmail">Email</Label>
-                            <Input type="email" name="userEmail" id="exampleEmail" placeholder="user123@email.com" onChange={this.onInputchange} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="examplePassword">Password</Label>
-                            <Input type="password" name="userPassword" id="examplePassword" placeholder="password123" onChange={this.onInputchange} />
-                        </FormGroup>
-                        <Button color="primary">Submit</Button>                   
-                    </Form>
-                    <Button color="link" onClick={() => this.closeForm()}>Cancel</Button>
-                </div>;
-        }
+        
         if (isError) {
             errorbanner = <Alert color="warning">{this.state.errorMessage}</Alert>;
         }
@@ -101,7 +67,31 @@ export default class UserAuthentication extends React.Component {
                     <div className="mfm-veil" style={{ display: this.state.showForm ? 'block': 'none'}}></div>
                     <Row>
                         {errorbanner}
-                        {form}
+                        <div className="mfm-login-signup-form">
+                            <Nav tabs>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => this.toggleTab('1')}>
+                                        Login
+                        </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => this.toggleTab('2')}>
+                                        Signup
+                          </NavLink>
+                                </NavItem>
+                            </Nav>
+                            <Form onSubmit={this.handleSubmit}>
+                                <FormGroup>
+                                    <Label for="exampleEmail">Email</Label>
+                                    <Input type="email" name="userEmail" id="exampleEmail" placeholder="user123@email.com" onChange={this.onInputchange} />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Label for="examplePassword">Password</Label>
+                                    <Input type="password" name="userPassword" id="examplePassword" placeholder="password123" onChange={this.onInputchange} />
+                                </FormGroup>
+                                <Button color="primary">Submit</Button>
+                            </Form>                         
+                        </div>
                     </Row>
                 </div>
             </Container>
