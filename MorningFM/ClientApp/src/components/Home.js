@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Jumbotron, Alert } from 'reactstrap';
-import UserAuthForm from './UserAuthForm';
+import UserAuthentication from './UserAuthentication';
 import rightImg from '../assets/radio.svg';
 import store from "../redux/store/index";
 import { setIsUserAuthenticating } from '../redux/actions';
-import classnames from 'classnames';
 
 export class Home extends Component {
     static displayName = Home.name;   
@@ -21,7 +20,6 @@ export class Home extends Component {
         if (userSession != undefined && userSession != null) {
             window.location = '/home?token=' + userSession; 
         }
-        console.log(store.getState());
         store.subscribe(() => {
             this.setState({ showForm: store.getState().isUserAuthenticating });
         }); 
@@ -43,7 +41,7 @@ export class Home extends Component {
                                     <div className={"mfm-button-neu " + (this.state.isGettingStarted ? "selected" : "")}
                                         onMouseDown={() => { this.setState({ isGettingStarted: true }); }}
                                         onMouseUp={() => { this.setState({ isGettingStarted: false }); }}
-                                        onClick={() => { store.dispatch(setIsUserAuthenticating({ isUserAuthenticating: true })); }}>
+                                        onClick={() => { store.dispatch(setIsUserAuthenticating(true)); }}>
                                         <h5>Getting Started</h5>
                                     </div>
                                 </Row>
@@ -54,7 +52,7 @@ export class Home extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <UserAuthForm></UserAuthForm>
+                <UserAuthentication></UserAuthentication>
             </Row>
       </Container>
     );

@@ -5,8 +5,8 @@ import store from "../redux/store/index";
 import { setIsUserAuthenticating } from '../redux/actions';
 import classnames from 'classnames';
 
-export default class UserAuthForm extends React.Component {
-    static displayName = UserAuthForm.name;
+export default class UserAuthentication extends React.Component {
+    static displayName = UserAuthentication.name;
     constructor(props) {
         super(props);
         this.state = {
@@ -33,9 +33,6 @@ export default class UserAuthForm extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.userEmail);
-        console.log(this.state.userPassword);
-        console.log(this.state.submitAction);
         this.authenticateUser(this.state.submitAction, this.state.userEmail, this.state.userPassword);
     }
 
@@ -60,6 +57,7 @@ export default class UserAuthForm extends React.Component {
     }
 
     componentDidMount() {
+        console.log("Mounted authentication page.");
         console.log(store.getState());
         store.subscribe(() => {
             this.setState({ showForm: store.getState().isUserAuthenticating }); 
@@ -67,7 +65,7 @@ export default class UserAuthForm extends React.Component {
     }
 
     closeForm() {
-        store.dispatch(setIsUserAuthenticating({ isUserAuthenticating: false }));
+        store.dispatch(setIsUserAuthenticating(false));
         this.setState({ showForm: false });
     }
 
@@ -81,32 +79,33 @@ export default class UserAuthForm extends React.Component {
         let form;
         let errorbanner;
         if (showForm) {
-            form = <div className="mfm-login-signup-form">               
-                <Nav tabs>
-                    <NavItem>
-                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => this.toggleTab('1')}>
-                            Login
-                    </NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={()=> this.toggleTab('2')}>
-                            Signup
-                      </NavLink>
-                    </NavItem>
-                </Nav>
-                <Form onSubmit={this.handleSubmit}>
-                    <FormGroup>
-                        <Label for="exampleEmail">Email</Label>
-                        <Input type="email" name="userEmail" id="exampleEmail" placeholder="user123@email.com" onChange={this.onInputchange} />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="examplePassword">Password</Label>
-                        <Input type="password" name="userPassword" id="examplePassword" placeholder="password123" onChange={this.onInputchange} />
-                    </FormGroup>
-                    <Button color="primary">Submit</Button>                   
-                </Form>
-                <Button color="link" onClick={() => this.closeForm()}>Cancel</Button>
-            </div>;
+            form =
+                <div className="mfm-login-signup-form">               
+                    <Nav tabs>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => this.toggleTab('1')}>
+                                Login
+                        </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={()=> this.toggleTab('2')}>
+                                Signup
+                          </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <Form onSubmit={this.handleSubmit}>
+                        <FormGroup>
+                            <Label for="exampleEmail">Email</Label>
+                            <Input type="email" name="userEmail" id="exampleEmail" placeholder="user123@email.com" onChange={this.onInputchange} />
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="examplePassword">Password</Label>
+                            <Input type="password" name="userPassword" id="examplePassword" placeholder="password123" onChange={this.onInputchange} />
+                        </FormGroup>
+                        <Button color="primary">Submit</Button>                   
+                    </Form>
+                    <Button color="link" onClick={() => this.closeForm()}>Cancel</Button>
+                </div>;
         }
         if (isError) {
             errorbanner = <Alert color="warning">{this.state.errorMessage}</Alert>;

@@ -1,7 +1,5 @@
 import React, { Component, useContext } from 'react';
 import { Card, CardImg, CardBody, CardTitle, Container, Row, Col, Button } from 'reactstrap';
-import loadingImg from '../assets/cool-loading1.gif';
-import loadingImg2 from '../assets/cool-loading2.gif';
 
 class PodcastShows {
     constructor(id, name, images) {
@@ -11,7 +9,7 @@ class PodcastShows {
     }
 }
 
-export class UserHome extends React.Component {
+export class PlaylistCreate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -110,12 +108,12 @@ export class UserHome extends React.Component {
                 </Card>
             </Col>); 
         }
+
         const isLoading = this.state.isLoading;
         const needToBuild = this.state.generatedPlaylist == null || this.state.generatedPlaylist == "";
         let content;
         if (isLoading) {
             content = <div className="app-loading-content">
-                <img className="app-img" src={loadingImg2}></img>
                 <h3>{this.state.loadingMessage}</h3>
             </div>;
         }
@@ -128,14 +126,13 @@ export class UserHome extends React.Component {
                     <Col><Button className="app-button-right" onClick={this.handleShowSelectionSubmit} color={this.state.selectedShows.length > 0 ? 'primary' : 'secondary'} disabled={this.state.selectedShows.length <= 0}>Generate</Button></Col>
                 </Row>
                 <Row>
-                    {items}
+                    {items }
                 </Row>
             </Container>;
         }
         else {                   
             content = <div className="app-loading-content app-items-center">
                 <h1>Playlist created!</h1>
-                <img className="app-img" src={loadingImg} style={{ display: this.state.isFrameLoaded ? 'none' : 'block' }}></img>
                 <h3 style={{ display: this.state.isFrameLoaded ? 'none' : 'block' }}>{this.state.loadingMessage}</h3>
                 <iframe onLoad={() => { this.setState({isFrameLoaded: true}); }} src={"https://open.spotify.com/embed?uri=spotify:playlist:" + this.state.generatedPlaylist} width="300" height="380" frameBorder="0" allowtransparency="true"></iframe>
             </div>;          
