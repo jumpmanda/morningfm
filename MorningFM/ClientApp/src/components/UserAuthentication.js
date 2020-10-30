@@ -1,8 +1,5 @@
 ﻿import React, { Component } from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Jumbotron, Alert, Nav, NavItem, NavLink } from 'reactstrap';
-import { connect } from "react-redux";
-import store from "../redux/store/index";
-import { setIsUserAuthenticating } from '../redux/actions';
 import classnames from 'classnames';
 
 export default class UserAuthentication extends React.Component {
@@ -13,11 +10,8 @@ export default class UserAuthentication extends React.Component {
             isError: false,
             errorMessage: '',
             submitAction: 'LOGIN',
-            showForm: false,
             userEmail: '',
             userPassword: '',
-            showLogin: true,
-            showSignup: false,
             activeTab: '1'
         };
 
@@ -55,18 +49,9 @@ export default class UserAuthentication extends React.Component {
                     console.log(err);
                 });
     }
-
-    componentDidMount() {
-        console.log("Mounted authentication page.");
-        console.log(store.getState());
-        store.subscribe(() => {
-            this.setState({ showForm: store.getState().isUserAuthenticating }); 
-        })
-    }
-
+    
     closeForm() {
-        store.dispatch(setIsUserAuthenticating(false));
-        this.setState({ showForm: false });
+        this.props.onFormClose(false);
     }
 
     toggleTab(tab) {
@@ -74,7 +59,7 @@ export default class UserAuthentication extends React.Component {
     }
 
     render() {
-        const showForm = this.state.showForm;
+        const showForm = this.props.showForm;
         const isError = this.state.isError;
         let form;
         let errorbanner;

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Jumbotron, Alert } from 'reactstrap';
 import UserAuthentication from './UserAuthentication';
 import rightImg from '../assets/radio.svg';
-import store from "../redux/store/index";
-import { setIsUserAuthenticating } from '../redux/actions';
 
 export class Home extends Component {
     static displayName = Home.name;   
@@ -12,7 +10,8 @@ export class Home extends Component {
           this.state = {
               isGettingStarted: false,
               showForm: false
-          }
+        }
+        this.closeAuthenticationForm = this.closeAuthenticationForm.bind(this);
     }  
 
     componentDidMount() {
@@ -20,9 +19,10 @@ export class Home extends Component {
         if (userSession != undefined && userSession != null) {
             window.location = '/home?token=' + userSession; 
         }
-        store.subscribe(() => {
-            this.setState({ showForm: store.getState().isUserAuthenticating });
-        }); 
+    }
+
+    closeAuthenticationForm() {
+        this.setState({showForm: false});
     }
 
     render() {
@@ -41,7 +41,9 @@ export class Home extends Component {
                                     <div className={"mfm-button-neu " + (this.state.isGettingStarted ? "selected" : "")}
                                         onMouseDown={() => { this.setState({ isGettingStarted: true }); }}
                                         onMouseUp={() => { this.setState({ isGettingStarted: false }); }}
-                                        onClick={() => { store.dispatch(setIsUserAuthenticating(true)); }}>
+                                        onClick={() => {
+                                            this.setState({ showForm: true });
+                                        }}>
                                         <h5>Getting Started</h5>
                                     </div>
                                 </Row>
@@ -52,7 +54,7 @@ export class Home extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <UserAuthentication></UserAuthentication>
+                <UserAuthentication showForm={this.state.showForm} onFormClose={this.closeAuthenticationForm}></UserAuthentication>
             </Row>
       </Container>
     );

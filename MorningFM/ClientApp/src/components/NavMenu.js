@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './NavMenu.css';
-import store from "../redux/store/index";
-import { setIsUserAuthenticating } from '../redux/actions';
 
 export class NavMenu extends Component {
   static displayName = NavMenu.name;
@@ -23,11 +21,6 @@ export class NavMenu extends Component {
     });
   }
 
-    toggleLoginSignup(e) {
-        e.preventDefault();
-        store.dispatch(setIsUserAuthenticating({ isUserAuthenticating: true }));
-    }
-
   render () {
     return (
       <header className="mfm-navbar-header">
@@ -38,7 +31,7 @@ export class NavMenu extends Component {
             <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
               <ul className="navbar-nav flex-grow">
                 <NavItem>
-                    {/** <NavLink className="text-dark" onClick={this.toggleLoginSignup} href="/">Login/Signup</NavLink> **/}
+                    {/** show signout button here; check if session token is available, remove **/}
                 </NavItem>
               </ul>
             </Collapse>
