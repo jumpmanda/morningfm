@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -40,66 +41,29 @@ namespace MorningFM.Controllers
         }
         #endregion 
 
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Authorize([FromBody] UserLoginRequest loginRequest)
+        public async Task<IActionResult> Authorize()
         {
             try
             {
-                if(loginRequest == null || loginRequest.Email == null || loginRequest.Password == null)
-                {
-                    return BadRequest("Must provide login credentials.");
-                }
-                if(loginRequest.LoginAction == LoginAction.SIGNUP)
-                {
-                    try
-                    {
-                        var plainTextBytes = Encoding.UTF8.GetBytes(loginRequest.Password);
-                        var basicAuth = System.Convert.ToBase64String(plainTextBytes);
-                        //TODO: Do better job at saving credentials; use some salting perhaps...
-                        await _repo.AddAsync(new User() { Email = loginRequest.Email, Password = basicAuth });
-                        _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), $"New user added {loginRequest.Email}"); 
-                    }
-                    catch
-                    {
-                        return BadRequest("New user could not be added.");
-                    }                    
-                }
-                else
-                {
-                    try
-                    {
-                        var results = await _repo.GetAsync<User>(u => u.Email == loginRequest.Email);
-                        if (results == null)
-                        {
-                            return BadRequest("User could not be found.");
-                        }
-                        var bytes = Convert.FromBase64String(results[0].Password);
-                        var plainTextBytes = Encoding.UTF8.GetBytes(loginRequest.Password);
-                        if (!Encoding.UTF8.GetString(plainTextBytes).Equals(loginRequest.Password))
-                        {
-                            return BadRequest("Bad password.");
-                        }
-                    }
-                    catch
-                    {
-                        return BadRequest("Could not login user.");
-                    }
-                   
-                }
-                
+                StringValues code;
+                Request.Query.TryGetValue("code", out code);
+                StringValues state;
+                Request.Query.TryGetValue("state", out state);
+                _logger.LogInformation($"Spotify Initial Login was successful code: {code} state: {state}");            
+
                 var url = _spotifyAuthorization.GetLoginPage().ToString();
                 _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
-                return Ok(new { redirectUrl = url}); 
+                return Redirect(url); 
             }
             catch(Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }        
-
 
         [HttpGet("callback")]
         public async Task<IActionResult> GetAccessToken()
@@ -112,7 +76,7 @@ namespace MorningFM.Controllers
             {
                 var accessBlob = await _spotifyAuthorization.GetAccessBlob(code);
                 var session = new Session() { Token = Guid.NewGuid(), spotifyAccess = accessBlob };
-                await _sessionRepo.AddAsync(session); //todo: add logout for user
+                await _sessionRepo.AddAsync(session);
                 return Redirect($"/home?token={session.Token}");
             }
             catch(Exception e)
@@ -120,6 +84,9 @@ namespace MorningFM.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
 
-        }
+        } 
+        
+        //TODO: Add logout
+
     }
 }
