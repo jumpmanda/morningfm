@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, Jumbotron, Alert } from 'reactstrap';
 import rightImg from '../assets/radio.svg';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -14,8 +14,7 @@ function redirect(isAuthenticated, authenticateCallback) {
     }    
 }
 
-function Home() {
-   
+function Home() {   
     const {
         isLoading,
         isAuthenticated,
@@ -25,7 +24,7 @@ function Home() {
         logout,
     } = useAuth0();
 
-    let isButtonClicked = false;
+    const [isButtonClicked, setButtonClick] = useState(false);
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -46,8 +45,8 @@ function Home() {
                             </Row>
                             <Row style={{ marginTop: '1rem' }}>
                                 <div className={"mfm-button-neu " + (isButtonClicked ? "selected" : "")}
-                                    onMouseDown={() => { isButtonClicked = true; }}
-                                    onMouseUp={() => { isButtonClicked = false; }}
+                                    onMouseDown={() => { setButtonClick(true); }}
+                                    onMouseUp={() => { setButtonClick(false); }}
                                     onClick={() => {redirect(isAuthenticated, loginWithRedirect);}}>
                                     <h5>Get Started</h5>
                                 </div>                                    

@@ -115,3 +115,57 @@ code {
     padding-top: 10rem;
 }
 
+.mfm-carousel-container {
+    height: 500px;
+    white-space: nowrap;
+    text-align: center;
+    border: 2px red solid;
+    overflow-x: hidden;
+}
+
+.mfm-carousel-item {
+    display: inline-block;  
+    margin: 1rem !important;
+    text-align:left; 
+    margin: auto;
+    max-height: 500px;
+    width: 30%;
+}
+
+#mfm-carousel-previous-btn {
+    position: absolute;
+    top: 470px;
+    left: 2%;
+}
+
+#mfm-carousel-next-btn {
+    position: absolute;
+    top: 470px;
+    left: 95%;
+}
+
+.mfm-carousel-element-strip {
+    position: relative;
+    transition: left ease 0.5s; 
+}
+
+.mfm-carousel-oval {
+    position: absolute;
+    right: 0;
+    margin-right: 20px;
+    height: 35px;
+    width: 35px;    
+    border-radius: 50%;
+    border: 2px solid grey;
+    text-align: center;
+}
+
+.mfm-carousel-oval.selected {
+    border: 2px solid #007bff;
+    background-color: #007bff;
+}
+
+.mfm-carousel-card{
+    
+}
+

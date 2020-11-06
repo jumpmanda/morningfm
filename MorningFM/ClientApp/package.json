@@ -21,7 +21,15 @@
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@storybook/addon-actions": "^6.0.28",
+    "@storybook/addon-essentials": "^6.0.28",
+    "@storybook/addon-links": "^6.0.28",
+    "@storybook/node-logger": "^6.0.28",
+    "@storybook/preset-create-react-app": "^3.1.4",
+    "@storybook/react": "^6.0.28",
     "ajv": "^6.9.1",
+    "babel-loader": "^8.1.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.12.0",
     "eslint-config-react-app": "^4.0.1",
@@ -29,6 +37,7 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.11.1",
+    "react-is": "^17.0.1",
     "redux-devtools": "^3.7.0",
     "typescript": "^3.5.2"
   },
@@ -40,7 +49,9 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/",
+    "storybook": "start-storybook -p 6006 -s public --no-dll",
+    "build-storybook": "build-storybook -s public --no-dll"
   },
   "browserslist": {
     "production": [

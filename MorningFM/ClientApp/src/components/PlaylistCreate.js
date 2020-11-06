@@ -1,5 +1,7 @@
 import React, { Component, useContext } from 'react';
 import { Card, CardImg, CardBody, CardTitle, Container, Row, Col, Button } from 'reactstrap';
+import Carousel from './Carousel';
+import { CardCarouselData } from './CarouselCard';
 
 class PodcastShows {
     constructor(id, name, images) {
