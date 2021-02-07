@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
-import Home from './components/Home';
-import { PlaylistCreate } from './components/PlaylistCreate';
+import Home from './pages/Home';
+import { PlaylistCreate } from './pages/PlaylistCreate';
 import './custom.css'
 
 

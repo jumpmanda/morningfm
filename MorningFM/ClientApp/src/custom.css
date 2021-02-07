@@ -123,13 +123,20 @@ code {
     overflow-x: hidden;
 }
 
-.mfm-carousel-item {
+.mfm-carousel-wrapper {
     display: inline-block;  
-    margin: 1rem !important;
-    text-align:left; 
+    text-align: left;
     margin: auto;
     max-height: 500px;
     width: 30%;
+}
+
+.mfm-carousel-item {
+    margin: 1rem !important;
+    text-align: left;
+    margin: auto;
+    width: 60%;
+    transition: width 1s ease-in-out;
 }
 
 #mfm-carousel-previous-btn {
@@ -165,7 +172,11 @@ code {
     background-color: #007bff;
 }
 
-.mfm-carousel-card{
-    
+.mfm-carousel-card{    
+}
+
+.mfm-carousel-item.center {
+    border: 2px purple solid;
+    width: 450px;    
 }
 

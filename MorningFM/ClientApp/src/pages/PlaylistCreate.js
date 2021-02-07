@@ -1,7 +1,7 @@
 import React, { Component, useContext } from 'react';
 import { Card, CardImg, CardBody, CardTitle, Container, Row, Col, Button } from 'reactstrap';
-import Carousel from './Carousel';
-import { CardCarouselData } from './CarouselCard';
+import Carousel from '../components/carousel/Carousel';
+import { CardCarouselData } from '../components/CarouselCard';
 
 class PodcastShows {
     constructor(id, name, images) {
@@ -22,7 +22,8 @@ export class PlaylistCreate extends React.Component {
             generatedPlaylist: '',
             isLoading: true,
             loadingMessage: 'Starting up.... just a sec...',
-            isFrameLoaded: false
+            isFrameLoaded: false,
+            showCards: []
         };
         this.handleShowSelectionSubmit = this.handleShowSelectionSubmit.bind(this);
     }
@@ -53,6 +54,14 @@ export class PlaylistCreate extends React.Component {
                     this.setState({ isError: true, errorMessage: err });
                     console.log(err);
                 });
+    }
+
+    getUserShowCards() {
+        let cards = null; 
+        if (this.state.podcastShows != null && this.state.podcastShows != undefined) {
+            cards = this.state.podcastShows.map(item => { return new CardCarouselData(item.name, "", item.images[0].url, item.name) });            
+        }     
+        return cards;
     }
 
     toggleShowCard(e, index) {
@@ -98,19 +107,21 @@ export class PlaylistCreate extends React.Component {
     }
 
     render() {        
-        const shows = this.state.podcastShows;
-        const items = []; 
-        for (const [index, value] of shows.entries()) {
-            items.push(<Col>
-                <Card className={`mfm-show-card ${this.state.selectedShows.indexOf(index) == -1 ? '' : 'selected-card'}`} key={index} onClick={(e) => this.toggleShowCard(e, index)} id={"card-" + index}>
-                    <CardImg top width="100%" src={value.images[0].url} alt="Show Image" />
-                    <CardBody>
-                        <CardTitle>{value.name}</CardTitle>
-                    </CardBody>
-                </Card>
-            </Col>); 
-        }
+        //todo: move this into a grid view
+        //const shows = this.state.podcastShows;
+        //const items = []; 
+        //for (const [index, value] of shows.entries()) {
+        //    items.push(<Col>
+        //        <Card className={`mfm-show-card ${this.state.selectedShows.indexOf(index) == -1 ? '' : 'selected-card'}`} key={index} onClick={(e) => this.toggleShowCard(e, index)} id={"card-" + index}>
+        //            <CardImg top width="100%" src={value.images[0].url} alt="Show Image" />
+        //            <CardBody>
+        //                <CardTitle>{value.name}</CardTitle>
+        //            </CardBody>
+        //        </Card>
+        //    </Col>); 
+        //}
 
+        const showCards = this.getUserShowCards(); 
         const isLoading = this.state.isLoading;
         const needToBuild = this.state.generatedPlaylist == null || this.state.generatedPlaylist == "";
         let content;
@@ -128,7 +139,7 @@ export class PlaylistCreate extends React.Component {
                     <Col><Button className="app-button-right" onClick={this.handleShowSelectionSubmit} color={this.state.selectedShows.length > 0 ? 'primary' : 'secondary'} disabled={this.state.selectedShows.length <= 0}>Generate</Button></Col>
                 </Row>
                 <Row>
-                    {items }
+                    <Carousel cardData={showCards} />
                 </Row>
             </Container>;
         }

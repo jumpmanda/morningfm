@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Card, CardImg, CardBody, CardSubtitle, CardTitle, CardImgOverlay } from 'reactstrap';
-import checkImg from '../assets/check-mark.png';
+import checkImg from '../../assets/check-mark.png';
 
 export class CardCarouselData {
     constructor(title, subtitle, imageSrc, altCaption) {

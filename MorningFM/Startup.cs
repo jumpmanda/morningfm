@@ -11,7 +11,9 @@ using MorningFM.Logic;
 using MorningFM.Logic.DTOs;
 using MorningFM.Logic.Repositories;
 using MorningFM.Logic.Repository;
+using MorningFM.Middleware;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace MorningFM
@@ -35,21 +37,27 @@ namespace MorningFM
                 .AddControllersWithViews()
                 .AddNewtonsoftJson();
 
+            //services.AddTokenAuthentication(Configuration);
+            services.AddSingleton<IAuthenticationService>((provider)=> {
+                return new AuthenticationService(provider.GetService<IConfiguration>()); 
+            }); 
+
             services.AddSingleton<MorningFMRepository<User>>((provider) =>{
-                    return new MorningFMRepository<User>("mongodb://localhost:27017", "morningfm-library", "users");
+                    return new MorningFMRepository<User>(Configuration.GetSection("Mongo:connection").Value, 
+                        Configuration.GetSection("Mongo:database").Value, 
+                        Configuration.GetSection("Mongo:userCollection").Value);
             });
             services.AddSingleton<MorningFMRepository<Session>>((provider) => {
-                return new MorningFMRepository<Session>("mongodb://localhost:27017", "morningfm-library", "sessions");
+                return new MorningFMRepository<Session>(Configuration.GetSection("Mongo:connection").Value,
+                        Configuration.GetSection("Mongo:database").Value,
+                        Configuration.GetSection("Mongo:sessionCollection").Value);
             });
 
             services.AddTransient<HttpHandler>();
 
-            var serviceProvider = services.BuildServiceProvider();
-
-            var logger = serviceProvider.GetService<ILogger<SpotifyAuthorization>>();
-            services.AddSingleton(typeof(Microsoft.Extensions.Logging.ILogger), logger);
-            var logger2 = serviceProvider.GetService<ILogger<SpotifyHandler>>();
-            services.AddSingleton(typeof(Microsoft.Extensions.Logging.ILogger), logger2);
+            var serviceProvider = services.BuildServiceProvider();           
+            services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyAuthorization>>());
+            services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyHandler>>());
 
             services.AddTransient<SpotifyHandler>((provider)=> {
                 return new SpotifyHandler(provider.GetService<ILogger<SpotifyHandler>>(), provider.GetService<HttpHandler>());
@@ -82,7 +90,7 @@ namespace MorningFM
 
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            app.UseSpaStaticFiles();            
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -94,8 +102,9 @@ namespace MorningFM
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseRouting();
-
+            app.UseAuthentication(); 
+            app.UseRouting();           
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
