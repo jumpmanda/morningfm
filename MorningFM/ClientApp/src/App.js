@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import Home from './pages/Home';
-import { PlaylistCreate } from './pages/PlaylistCreate';
+import { Route, Switch } from 'react-router';
 import './custom.css'
-
+import { MainPage } from 'pages/main/MainPage';
+import { AboutPage } from 'pages/about/AboutPage'; 
+import { PlaylistBuilderPage } from 'pages/playlist-builder/PlaylistBuilderPage';
 
 export default class App extends Component {
-    static displayName = App.name;
+  static displayName = App.name;
 
-      render () {
-          return (
-            <Layout>
-                <Route exact path='/' component={Home} />
-                  <Route path='/home' component={PlaylistCreate} />
-            </Layout>    
-        );
-      }
+  render () {
+    return (
+      <Switch>
+        <Route exact path='/' component={MainPage} />
+        <Route exact path='/about' component={AboutPage} />
+        <Route path='/playlist' component={PlaylistBuilderPage} />
+      </Switch>
+    );
+  }
 }

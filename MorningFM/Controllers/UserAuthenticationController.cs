@@ -77,7 +77,7 @@ namespace MorningFM.Controllers
                 var accessBlob = await _spotifyAuthorization.GetAccessBlob(code);
                 var session = new Session() { Token = Guid.NewGuid(), spotifyAccess = accessBlob };
                 await _sessionRepo.AddAsync(session);
-                return Redirect($"/home?token={session.Token}");
+                return Redirect($"/playlist?token={session.Token}");
             }
             catch(Exception e)
             {
