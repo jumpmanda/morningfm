@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { LandingLayout } from './LandingPage.style';
+import { LandingLayout } from './LoadingPage.style';
 import landingGif from "assets/cool-loading2.gif";
 
 export const LandingPage = () => {

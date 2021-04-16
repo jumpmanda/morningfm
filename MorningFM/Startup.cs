@@ -55,9 +55,9 @@ namespace MorningFM
 
             services.AddTransient<HttpHandler>();
 
-            var serviceProvider = services.BuildServiceProvider();           
-            services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyAuthorization>>());
-            services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyHandler>>());
+            //var serviceProvider = services.BuildServiceProvider();           
+            //services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyAuthorization>>());
+            //services.AddSingleton(serviceProvider.GetService<ILogger<SpotifyHandler>>());
 
             services.AddTransient<SpotifyHandler>((provider)=> {
                 return new SpotifyHandler(provider.GetService<ILogger<SpotifyHandler>>(), provider.GetService<HttpHandler>());
@@ -102,9 +102,9 @@ namespace MorningFM
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseAuthentication(); 
+            //app.UseAuthentication(); 
             app.UseRouting();           
-            app.UseAuthorization();
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

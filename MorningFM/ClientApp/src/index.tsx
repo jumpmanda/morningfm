@@ -4,22 +4,18 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-import { Auth0Provider } from "@auth0/auth0-react";
-import config from "./auth_config.json";
+import Auth0ProviderWithHistory from 'auth/Auth0ProviderWithHistory'; 
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 const base = window.location.origin; 
 
 ReactDOM.render(
-  <Auth0Provider
-        domain={config.domain}
-        clientId={config.clientId}
-        redirectUri={"http://localhost:5000" + config.redirectUriPath}>
-        <BrowserRouter basename={baseUrl ?? ""}>
-            <App />
-        </BrowserRouter>
-    </Auth0Provider>,
+  <BrowserRouter basename={baseUrl ?? ""}>
+    <Auth0ProviderWithHistory>
+      <App/>
+    </Auth0ProviderWithHistory>
+  </BrowserRouter>,
   rootElement);
 
 registerServiceWorker();

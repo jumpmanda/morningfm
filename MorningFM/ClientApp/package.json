@@ -19,14 +19,24 @@
     "oidc-client": "^1.9.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-media": "^1.10.0",
     "react-responsive": "^8.2.0",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.1",
-    "reactstrap": "^8.4.1",
+    "reactstrap": "^8.9.0",
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.1.21",
+    "@storybook/addon-essentials": "^6.1.21",
+    "@storybook/addon-links": "^6.1.21",
+    "@storybook/node-logger": "^6.1.21",
+    "@storybook/preset-create-react-app": "^3.1.6",
+    "@storybook/react": "^6.1.21",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@types/reactstrap": "^8.7.2",
     "ajv": "^6.9.1",
     "cross-env": "^5.2.0",
     "eslint": "^6.8.0",
@@ -35,7 +45,9 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.3",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "nan": "^2.14.1",
+    "react-test-renderer": "^17.0.1",
     "typescript": "^3.9.7"
   },
   "eslintConfig": {
@@ -44,9 +56,11 @@
   "scripts": {
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "test": "cross-env CI=true react-scripts test --verbose --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/"
+    "lint": "eslint ./src/",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "browserslist": {
     "production": [

@@ -31,7 +31,7 @@ namespace MorningFM.Logic
 
     public class SpotifyAuthorization
     {
-        private ILogger _logger; 
+        private ILogger<SpotifyAuthorization> _logger; 
         private protected string _clientId { private get; set; }
         private protected string _clientSecret { private get; set; } //TODO: Don't do this!!!! Simply store secrets somewhere else!
         private const string _responseType = "code";

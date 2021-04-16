@@ -1,14 +1,12 @@
 import React from 'react'; 
-import { useHistory } from 'react-router';
-import {Default, Tablet, Mobile} from 'pages/shared/media-queries/MediaQueries'; 
-import { MainLayout, MainFooter, MobileLayout, Button } from 'pages/main/MainPage.style';
+import {Default, Mobile} from 'pages/shared/media-queries/MediaQueries'; 
+import { MainLayout, MobileLayout, Button } from 'pages/main/MainPage.style';
 import { Page } from 'pages/shared/page/Page';
 import radioImg from 'assets/radio.svg';
 import { useAuth0 } from '@auth0/auth0-react';
 
 
 export const MainPage = () => {
-    const history = useHistory(); 
 
     const {
         isLoading,
@@ -16,19 +14,16 @@ export const MainPage = () => {
         error,
         user,
         loginWithRedirect,
-        logout,
     } = useAuth0();
 
-    const redirect = (isAuthenticated: boolean, authenticateCallback: Function) => {
-        debugger;
-        var userSession = sessionStorage.getItem('mfmSession');
-        if (userSession !== undefined && userSession != null) {
-            history.push("/playlist")
-            return;
-        }
+    const redirect = (isAuthenticated: boolean, authenticateCallback: Function) => {        
         if (!isAuthenticated) {
             authenticateCallback();         
-        }    
+        }  
+        else{
+            window.location.href = "/test"; 
+            console.log(user);             
+        }  
     }
 
     if (isLoading) {

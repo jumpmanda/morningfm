@@ -57,7 +57,7 @@ namespace MorningFM.Controllers
 
                 var url = _spotifyAuthorization.GetLoginPage().ToString();
                 _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
-                return Redirect(url); 
+                return Ok(new { redirectUri = url }); 
             }
             catch(Exception e)
             {

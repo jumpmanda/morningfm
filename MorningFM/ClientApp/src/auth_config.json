@@ -1,5 +1,5 @@
 {
   "domain": "morningfm.us.auth0.com",
   "clientId": "JACNBkOUSWJUrs1oTWKf8qR0AOQwuPbB",
-  "redirectUriPath": "/api/authentication"
+  "redirectUriPath": "authenticate"
 }
