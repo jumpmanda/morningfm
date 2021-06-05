@@ -12,8 +12,7 @@ namespace MorningFM.UnitTests
         public static string accessToken; 
         [ClassInitialize]
         public static void ClassInit(TestContext testContext)
-        {
-            accessToken = "BQA5XYynzlGUIu5_YsDJ51Ks8Wq3q1BGDBnfbNa1qLLZFPZtnfjcEC0zKVeWbuz3pMALMA1eSjemcJpAFA1tnft1yptGqGX78prMLDEPDDVKIZ_Z0GV-YIj4y2mXcGpNgjdINdmLZiipY6KZmt5DVd4ETdNjfD9YxgZ__wVtb7XnKvlDLcywr-H1ZiScctxWdOm3Z5tOPC3V2Ux2DcMOqRQaOcGaqRhoFGU9iRTtuTC5Ezj4FFA3EXGogjdSOT5u"; 
+        {           
         }
 
         [TestMethod]

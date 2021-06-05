@@ -24,11 +24,12 @@ test('loads MainPage', () => {
     loginWithRedirect: jest.fn()
   }); 
 
-  const { queryAllByRole } = render(
+  const { container: desktop, queryAllByRole } = render(
     <ResponsiveContext.Provider value={{ width: 769 }}>
       <MainPage/>
     </ResponsiveContext.Provider>
   ); 
+  
     expect(queryAllByRole('heading')[0]).toHaveTextContent('MorningFM');  
   }); 
 

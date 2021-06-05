@@ -1,15 +1,15 @@
 import React from 'react'; 
-import { LandingLayout } from './LoadingPage.style';
+import { LoadingLayout } from 'pages/loading/LoadingPage.style';
 import landingGif from "assets/cool-loading2.gif";
 
-export const LandingPage = () => {
+export const LoadingPage = () => {
     
     const landingHeader = "Loading...."; 
     
     return(
-        <LandingLayout>       
+        <LoadingLayout>       
             <img src={landingGif} alt={"Loading Gif"}/>
             <h3>{landingHeader}</h3>
-        </LandingLayout>
+        </LoadingLayout>
     );
 }; 

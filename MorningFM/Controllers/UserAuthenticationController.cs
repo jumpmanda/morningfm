@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -45,18 +46,15 @@ namespace MorningFM.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize]
         public async Task<IActionResult> Authorize()
         {
             try
             {
-                StringValues code;
-                Request.Query.TryGetValue("code", out code);
-                StringValues state;
-                Request.Query.TryGetValue("state", out state);
-                _logger.LogInformation($"Spotify Initial Login was successful code: {code} state: {state}");            
-
                 var url = _spotifyAuthorization.GetLoginPage().ToString();
+
                 _logger.LogDebug(new EventId((int)MorningFMEventId.UserAuthentication), "User provided with spotify authorization login url.");
+              
                 return Ok(new { redirectUri = url }); 
             }
             catch(Exception e)
@@ -77,7 +75,7 @@ namespace MorningFM.Controllers
                 var accessBlob = await _spotifyAuthorization.GetAccessBlob(code);
                 var session = new Session() { Token = Guid.NewGuid(), spotifyAccess = accessBlob };
                 await _sessionRepo.AddAsync(session);
-                return Redirect($"/playlist?token={session.Token}");
+                return Redirect($"/build?token={session.Token}");
             }
             catch(Exception e)
             {

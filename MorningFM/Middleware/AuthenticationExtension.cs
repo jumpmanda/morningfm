@@ -2,39 +2,27 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MorningFM.Middleware
 {
     public static class AuthenticationExtension
     {
-        public static IServiceCollection AddTokenAuthentication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddTokenAuthentication(this IServiceCollection services, IConfiguration Configuration)
         {
-            var secret = configuration.GetSection("JwtConfig").GetSection("secret").Value;
-
-            var key = Encoding.ASCII.GetBytes(secret);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.TokenValidationParameters = new TokenValidationParameters
+            string domain = $"https://{Configuration["Auth0:Domain"]}/";
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = "localhost",
-                    ValidAudience = "localhost"
-                };
-            });
+                    options.Authority = domain;
+                    options.Audience = Configuration["Auth0:Audience"];
+                    // If the access token does not have a `sub` claim, `User.Identity.Name` will be `null`. Map it to a different claim by setting the NameClaimType below.
+                    options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                NameClaimType = ClaimTypes.NameIdentifier
+                            };
+                });
 
             return services;
         }

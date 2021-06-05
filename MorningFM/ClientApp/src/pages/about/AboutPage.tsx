@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Page } from 'pages/shared/page/Page';
+import { Page } from 'shared/page/Page';
 import { AboutLayout } from './AboutPage.style';
 
 export const AboutPage = () => {

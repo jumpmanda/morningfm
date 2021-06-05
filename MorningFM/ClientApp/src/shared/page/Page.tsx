@@ -1,6 +1,5 @@
 import React from 'react'; 
-import { PageLayout, PageMobileLayout } from './Page.style';
-import {Default, Tablet, Mobile} from 'pages/shared/media-queries/MediaQueries'; 
+import { PageLayout } from './Page.style';
 
 export interface PageProps{
 }

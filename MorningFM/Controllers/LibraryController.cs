@@ -11,17 +11,20 @@ using MorningFM.Logic.DTOs;
 using MorningFM.Logic.Repository;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MorningFM.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class LibraryController : Controller
     {
-        private ILogger _logger; 
+        private ILogger<LibraryController> _logger; 
         private SpotifyAuthorization _spotifyAuthorization;
         private SpotifyHandler _spotifyHandler;
         private IRepository<Session> _sessionRepo;
-        public LibraryController(IConfiguration configuration, MorningFMRepository<Session> sessionRepo, 
+
+        public LibraryController(MorningFMRepository<Session> sessionRepo, 
             ILogger<LibraryController> logger, 
             SpotifyAuthorization spotifyAuthorization, 
             SpotifyHandler spotifyHandler)
@@ -31,8 +34,8 @@ namespace MorningFM.Controllers
             _spotifyHandler = spotifyHandler ?? throw new ArgumentException("Spotify handler is not initialized.");
             _sessionRepo = sessionRepo ?? throw new ArgumentException("Session repository is not initialized.");
         }
-
-        [HttpGet("{sessionToken}/shows")]
+        
+        [HttpGet("{sessionToken}/shows")]      
         public async Task<IActionResult> GetUserShows(string sessionToken)
         {
             try
@@ -124,7 +127,9 @@ namespace MorningFM.Controllers
                 {
                     return BadRequest("Could not retrieve tracks. Bad session.");
                 }
-                var session = sessionResults[0];
+                
+                var session = sessionResults.FirstOrDefault();
+
                 var playlistId = await _spotifyHandler.CreateRecommendedPlaylist(session.spotifyAccess.AccessToken);
                 _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Session {sessionToken} - Fetching user recommended playlist.");
                 //todo: take in show ids to fetch episodes and add to playlist

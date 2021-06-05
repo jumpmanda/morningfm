@@ -21,32 +21,23 @@ export const MainLayout = styled.div`
         }
     }
 
-`; 
-
-export const MainFooter = styled.div`
-    width: 100%; 
-     > * {
-        float: right;
-     }
-`; 
-
-
-export const MobileLayout = styled(MainLayout)`
-    height: auto;
-    flex-direction: column;
-    margin: 0; 
-    padding: 0; 
-    min-width: 0;
-    section {
-        > img{
-            height: 200px;
-            width: 200px;
-            min-height: 100px;
-            min-width: 100px; 
-            max-height: 250px; 
-            max-width: 250px; 
-        }
-    }    
+    @media only screen and (max-width: 1110px) {
+        height: auto;
+        flex-direction: column;
+        margin: 0; 
+        padding: 0; 
+        min-width: 0;
+        section {
+            > img{
+                height: 200px;
+                width: 200px;
+                min-height: 100px;
+                min-width: 100px; 
+                max-height: 250px; 
+                max-width: 250px; 
+            }
+        }  
+    }
 
 `; 
 

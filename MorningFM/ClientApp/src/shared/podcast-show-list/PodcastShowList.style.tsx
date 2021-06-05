@@ -10,14 +10,25 @@ export const ListRowSelected = (props: ListRowProps) => css({
     border: props.isSelected ? '1px solid #6498FF': 'none'
 }); 
 
+export const ListLayout = styled.div`
+    ${ListRowSelected} 
+`;
+
 export const ListRow = styled.div`
     display: flex; 
     align-items: center;
     padding: 5px;
     & > * {        
-        margin-right: 2rem;
-        
-        &.truncate{
+        margin-right: 2rem;        
+    }   
+
+    @media only screen and (max-width: 768px) {
+        > img {
+            height: 50px; 
+            width: 50px; 
+        }
+
+        > h5 {
             width: 250px;
             white-space: nowrap;
             overflow: hidden;
@@ -25,16 +36,13 @@ export const ListRow = styled.div`
         }
     }
 
-    ${ListRowSelected}    
+    @media only screen and (min-width: 767px) {
+        > img {
+            height: 75px; 
+            width: 75px; 
+        }
+    }
+
 `;
 
-export const Image = styled.img`
-    height: 75px; 
-    width: 75px; 
-`; 
-
-
-export const MobileImage = styled.img`
-    height: 50px; 
-    width: 50px; 
-`; 
+ 

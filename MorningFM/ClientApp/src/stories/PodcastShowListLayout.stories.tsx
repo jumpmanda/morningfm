@@ -1,6 +1,6 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import { PodcastShowList, PodcastShowListProps } from '../pages/shared/podcast-show-list/PodcastShowList';
+import { PodcastShowList, PodcastShowListProps } from '../shared/podcast-show-list/PodcastShowList';
 
 export default {
   title: 'PodcastShowList',
