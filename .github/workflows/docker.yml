@@ -29,5 +29,6 @@ jobs:
         with:
           context: .
           push: true
+          path: MorningFM
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
