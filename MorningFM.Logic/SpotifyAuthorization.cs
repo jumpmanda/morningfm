@@ -33,19 +33,20 @@ namespace MorningFM.Logic
     {
         private ILogger<SpotifyAuthorization> _logger; 
         private protected string _clientId { private get; set; }
-        private protected string _clientSecret { private get; set; } //TODO: Don't do this!!!! Simply store secrets somewhere else!
+        private protected string _clientSecret { private get; set; }
         private const string _responseType = "code";
-        private const string _redirectUri = "http://localhost:5000/api/authentication/callback";
+        private readonly string _redirectUri;
         private const string _scope = "user-read-private user-read-email user-library-read user-top-read playlist-modify-public playlist-modify-private user-read-playback-position";
         private HttpClient _httpClient; 
 
-        public SpotifyAuthorization(string clientId, string clientSecret, ILogger<SpotifyAuthorization> logger)
+        public SpotifyAuthorization(string clientId, string clientSecret, string redirectUri, ILogger<SpotifyAuthorization> logger)
         {
             if (string.IsNullOrEmpty(clientId)) throw new ArgumentNullException("ClientId was not provided.");
             if (string.IsNullOrEmpty(clientSecret)) throw new ArgumentNullException("ClientSecret was not provided.");
             _logger = logger ?? throw new ArgumentNullException("Logger not provided.");
             _clientId = clientId;
             _clientSecret = clientSecret;
+            _redirectUri = redirectUri; 
             _httpClient = new HttpClient();           
         }
 

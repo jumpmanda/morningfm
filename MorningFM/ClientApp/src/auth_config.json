@@ -1,6 +1,6 @@
 {
   "domain": "morningfm.us.auth0.com",
   "clientId": "JACNBkOUSWJUrs1oTWKf8qR0AOQwuPbB",
-  "audience": "https://localhost:5001", 
+  "audience": "https://localhost:5001",
   "redirectUriPath": "api/authentication"
 }

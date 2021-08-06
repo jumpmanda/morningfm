@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MorningFM.Logic
@@ -122,23 +123,53 @@ namespace MorningFM.Logic
 
            foreach(var showId in showIds)
             {
-                var request = $"https://api.spotify.com/v1/shows/{showId}/episodes";
-                var payload = await _http.Get<EpisodeBlob>(accessToken, request);
-                _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), $"Fetching show episodes {showId}.");
-
-                var results = payload?.Items;
-                results.ToList().Sort((x, y) => DateTime.Compare(
-                    DateTime.ParseExact(x.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    DateTime.ParseExact(y.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)));
-
-                //Check release date for most recent episode
-                if (results != null)
+                var result = await GetLatestEpisode(accessToken, showId);
+                if (!string.IsNullOrEmpty(result))
                 {
-                    episodes.Add(results[0].Id);
-                }
+                    episodes.Add(result);
+                }                               
             }
 
             return episodes.ToArray();
+        }
+
+        private static int CompareReleaseDates(Episode e1, Episode e2)
+        {
+            return DateTime.Compare(
+                DateTime.ParseExact(e1.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                DateTime.ParseExact(e2.ReleaseDate, "yyyy-MM-dd", CultureInfo.InvariantCulture));
+        }
+
+        public async Task<string> GetLatestEpisode(string accessToken, string showId)
+        {
+            var request = $"https://api.spotify.com/v1/shows/{showId}/episodes";
+            var payload = await _http.Get<EpisodeBlob>(accessToken, request);
+            _logger.LogInformation(new EventId((int)MorningFMEventId.SpotifyAPI), $"Fetching show episodes {showId}.");
+
+            var results = payload?.Items;
+            var resultList = results.ToList(); 
+            //resultList.Sort(CompareReleaseDates);
+
+            var episode = resultList.FirstOrDefault(e => e.ResumeMetadata != null && !e.ResumeMetadata.IsFullyPlayed);
+            if(episode == null)
+            {
+                episode = results[0]; 
+            }
+
+            return episode?.Id ?? null; 
+        }
+
+        public async Task<string> GetMusicTalkPlaylist(string sessionToken, string accessToken, string[] showIds)
+        {
+            var playlistId = await CreateRecommendedPlaylist(accessToken);
+
+            _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Session {sessionToken} - Fetching user recommended playlist.");            
+
+            var episodesResults = await GetLatestEpisodes(accessToken, showIds);
+            var episodeIds = episodesResults.Select(e => $"spotify:episode:{e}").ToArray();
+            var completed = await AddTrackToPlaylistWithPosition(accessToken, playlistId, episodeIds);
+
+            return playlistId; 
         }
 
     }

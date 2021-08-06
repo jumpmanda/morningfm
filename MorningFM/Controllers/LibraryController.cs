@@ -37,7 +37,7 @@ namespace MorningFM.Controllers
         
         [HttpGet("{sessionToken}/shows")]      
         public async Task<IActionResult> GetUserShows(string sessionToken)
-        {
+        {            
             try
             {
                 if (string.IsNullOrEmpty(sessionToken))
@@ -122,18 +122,6 @@ namespace MorningFM.Controllers
             }
             try
             {
-                var sessionResults = await _sessionRepo.GetAsync<Session>(s => s.Token == Guid.Parse(sessionToken));
-                if (sessionResults.Count == 0)
-                {
-                    return BadRequest("Could not retrieve tracks. Bad session.");
-                }
-                
-                var session = sessionResults.FirstOrDefault();
-
-                var playlistId = await _spotifyHandler.CreateRecommendedPlaylist(session.spotifyAccess.AccessToken);
-                _logger.LogDebug(new EventId((int)MorningFMEventId.SpotifyAPI), $"Session {sessionToken} - Fetching user recommended playlist.");
-                //todo: take in show ids to fetch episodes and add to playlist
-
                 if (showRequest == null)
                 {
                     return BadRequest("Invalid request.");
@@ -143,9 +131,16 @@ namespace MorningFM.Controllers
                     return BadRequest("Must provide at least 1 podcast episode to add.");
                 }
 
-                var episodesResults = await _spotifyHandler.GetLatestEpisodes(session.spotifyAccess.AccessToken, showRequest.ShowIds);
-                var episodeIds = episodesResults.Select(e => $"spotify:episode:{e}").ToArray();
-                var completed = await _spotifyHandler.AddTrackToPlaylistWithPosition(session.spotifyAccess.AccessToken, playlistId, episodeIds);
+                var sessionResults = await _sessionRepo.GetAsync<Session>(s => s.Token == Guid.Parse(sessionToken));
+                if (sessionResults.Count == 0)
+                {
+                    return BadRequest("Could not retrieve tracks. Bad session.");
+                }
+               
+                var session = sessionResults.FirstOrDefault();
+                _logger.LogInformation($"Playlist creation recieved for session {session}. {showRequest}");
+
+                var playlistId = await _spotifyHandler.GetMusicTalkPlaylist(sessionToken, session.spotifyAccess.AccessToken, showRequest.ShowIds);
 
                 return Ok(new { playlistId = playlistId });
             }

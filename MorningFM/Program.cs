@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Extensions.Logging;
 using NLog.Web;
 
 namespace MorningFM
@@ -14,7 +17,16 @@ namespace MorningFM
     {
         public static void Main(string[] args)
         {
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                 .AddEnvironmentVariables()
+                .Build();
+            
+            NLog.GlobalDiagnosticsContext.Set("DefaultConnection", config["NlogConnection:ConnectionString"]);
+
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
             try
             {
                 CreateWebHostBuilder(args).Build().Run();
@@ -30,15 +42,17 @@ namespace MorningFM
        
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Information);
-                });
-                //.UseNLog();
-               
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+                })
+                .UseNLog();
+        }
+                      
     }
 }

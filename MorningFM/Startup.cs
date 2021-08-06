@@ -31,14 +31,35 @@ namespace MorningFM
             services.AddTokenAuthentication(Configuration);
 
             services.AddSingleton<MorningFMRepository<User>>((provider) =>{
-                    return new MorningFMRepository<User>(Configuration.GetSection("Mongo:connection").Value, 
-                        Configuration.GetSection("Mongo:database").Value, 
-                        Configuration.GetSection("Mongo:userCollection").Value);
+                string connection = "";
+                if (!string.IsNullOrEmpty(Configuration["Mongo:domain"]) && Configuration["Mongo:domain"].Contains("localhost"))
+                {
+                    connection = $"mongodb://localhost:27017";
+                }
+                else
+                {
+                    connection = $"mongodb+srv://{Configuration["Mongo:user"]}:{Configuration["Mongo:password"]}@{Configuration["Mongo:domain"]}";
+                }             
+                    return new MorningFMRepository<User>(connection, 
+                        Configuration["Mongo:database"], 
+                        Configuration["Mongo:userCollection"]);
             });
             services.AddSingleton<MorningFMRepository<Session>>((provider) => {
-                return new MorningFMRepository<Session>(Configuration.GetSection("Mongo:connection").Value,
-                        Configuration.GetSection("Mongo:database").Value,
-                        Configuration.GetSection("Mongo:sessionCollection").Value);
+
+                string connection = ""; 
+                if (!string.IsNullOrEmpty(Configuration["Mongo:domain"]) && Configuration["Mongo:domain"].Contains("localhost"))
+                {
+                    connection = $"mongodb://localhost:27017";
+                }
+                else
+                {
+                    connection = $"mongodb+srv://{Configuration["Mongo:user"]}:{Configuration["Mongo:password"]}@{Configuration["Mongo:domain"]}";
+
+                }
+               
+                return new MorningFMRepository<Session>(connection,
+                        Configuration["Mongo:database"],
+                        Configuration["Mongo:sessionCollection"]);
             });
 
             services.AddTransient<HttpHandler>();
@@ -48,7 +69,16 @@ namespace MorningFM
             });
 
             services.AddTransient<SpotifyAuthorization>((provider) => { 
-            return new SpotifyAuthorization(Configuration.GetValue<string>("Spotify:ClientId"), Configuration.GetValue<string>("Spotify:ClientSecret"), provider.GetService<ILogger<SpotifyAuthorization>>());
+            return new SpotifyAuthorization(
+                Configuration["Spotify:ClientId"],
+                Configuration["Spotify:ClientSecret"],
+                Configuration["Spotify:RedirectUri"], 
+                provider.GetService<ILogger<SpotifyAuthorization>>());
+            });
+
+            services.AddHttpsRedirection(options =>
+            {
+                options.HttpsPort = 5001;                
             });
 
             // In production, the React files will be served from this directory

@@ -1,72 +1,34 @@
 import React, { useState, useEffect } from 'react'; 
 import { useHistory, useLocation } from 'react-router';
-import { useAuth0 } from '@auth0/auth0-react';  
 import { PodcastShows } from '../../models/PodcastShows'; 
 import { PodcastShowList } from 'shared/podcast-show-list/PodcastShowList';
 import { PlaylistBuilderLayout } from './PlaylistBuilderPageStyle';
 import { Button, Alert } from 'reactstrap';
 import { AddCircleOutline } from '@material-ui/icons'; 
 import apiAuth from '../../auth/AuthUtils';
-
-export interface PodcastShowPayload {
-    addedAt: string; 
-    show: PodcastShows; 
-}
+import { usePodcastShows } from '../../hooks/usePodcastShows/usePodcastShows';
+import { useAccessToken } from '../../hooks/useAccessToken';
 
 export const PlaylistBuilderPage = () => {
 
     const location = useLocation(); 
     const history = useHistory(); 
-    const sessionToken = location.search.substring(location.search.indexOf('?token=') + 7, location.search.indexOf('?token=') + 7 + 36); 
-    const [podcastShows, setPodcastShows] = useState<PodcastShows[]>(); 
+    const sessionToken = location.search.substring(location.search.indexOf('?token=') + 7, location.search.indexOf('?token=') + 7 + 36);   
     const [selectedShows, setSelectedShows] = useState<PodcastShows[]>([]); 
-    const [token] = useState(sessionToken); 
-    const [accessToken, setAccessToken] = useState<string|null>(null); 
-    const { getAccessTokenSilently } = useAuth0();
+    const { accessToken } = useAccessToken(); 
     const [isWarningDisplayed, setIsWarningDisplayed] = useState(false); 
     const [isSelectionValid, setIsSelectionValid] = useState(false); 
+    const { podcastShows } = usePodcastShows(sessionToken, accessToken); 
 
     useEffect(()=>{
         let fetchSession = async () => {
-            if(!sessionToken || sessionToken === ""){
-                const token = await getAccessTokenSilently();
-                apiAuth(token);
+            if((!sessionToken || sessionToken === "") && accessToken !== ""){               
+                apiAuth(accessToken);
             }  
         };       
         fetchSession(); 
-    }, [sessionToken, getAccessTokenSilently]); 
-
-    useEffect(()=>{
-        if(accessToken !== "" && accessToken !== null){
-            getUserShows(); 
-        }       
-    }, [accessToken]);
-
-    useEffect(()=>{
-        let fetchAccessToken = async ()=>{
-            const accessToken = await getAccessTokenSilently();
-            setAccessToken(accessToken); 
-        }; 
-        fetchAccessToken(); 
-    }, [getAccessTokenSilently]); 
-
-    const getUserShows = async () => {                
-        fetch("api/library/" + token + "/shows", {
-            headers: { Accept: "application/json", Authorization: `Bearer ${accessToken}` },
-          })
-            .then(res => {
-                res.json().then(json => {                  
-                   var shows: PodcastShows[] = json.map((item: PodcastShowPayload) => { return item.show; }); 
-                   setPodcastShows(shows);
-                }
-                );
-            },
-                err => {
-                    //this.setState({ isError: true, errorMessage: err });
-                    console.log(err);
-                });
-    }
-
+    }, [sessionToken, accessToken]); 
+   
     const createPlaylist = async (shows: PodcastShows[]) => {       
 
         let showIds: string[] = shows.map((show)=>{ return show.id; }); 
@@ -77,12 +39,12 @@ export const PlaylistBuilderPage = () => {
             body: JSON.stringify({ showIds: showIds })
         }; 
         
-        fetch("api/library/" + token + "/recommended-playlist", requestOptions)
+        fetch("api/library/" + sessionToken + "/recommended-playlist", requestOptions)
             .then(res => {
                 res.json().then(json => {
                    console.log(json); 
                    let id = json.playlistId; 
-                   history.push(`playlist?token=${token}&id=${id}`); 
+                   history.push(`playlist?token=${sessionToken}&id=${id}`); 
                 }
                 );
             },
