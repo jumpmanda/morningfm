@@ -29,7 +29,6 @@ jobs:
         with:
           context: .
           push: true
-          path: MorningFM
-          dockerfile: MorningFM/Dockerfile
+          file: MorningFM/Dockerfile 
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
