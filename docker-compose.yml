@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  morningfm:
+    image: "morningfm.azurecr.io/morningfm"
+    ports:
+      - "5001:5001"
+    domainname: "morningfm"
+    volumes:
+        - mydata:/app/Infrastructure/Certificate
+
+volumes:
+    mydata:
+        driver: azure_file
+        driver_opts:
+            share_name: test-volume
+            storage_account_name: morningfmfileshare

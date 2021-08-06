@@ -1,0 +1,6 @@
+{
+  "domain": "#{Auth0Domain}#",
+  "clientId": "#{Auth0ClientId}#",
+  "audience": "#{Auth0Audience}#",
+  "redirectUriPath": "api/authentication"
+}

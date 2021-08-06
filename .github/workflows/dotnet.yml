@@ -1,0 +1,33 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1
+    
+    - name: Find and Replace Auth0 Domain
+      run: find MorningFM/ClientApp/src/auth_config.json -type f -exec sed -i ''s/#{Auth0Domain}#/${{ secrets.AUTH0_DOMAIN }}/g'' {} \;
+    - name: Find and Replace Auth0 ClientID
+      run: find MorningFM/ClientApp/src/auth_config.json -type f -exec sed -i ''s/#{Auth0ClientId}#/${{ secrets.AUTH0_CLIENTID }}/g'' {} \;
+    - name: Find and Replace Auth0 Audience
+      run: find MorningFM/ClientApp/src/auth_config.json -type f -exec sed -i ''s/#{Auth0Audience}#/${{ secrets.AUTH0_AUDIENCE }}/g'' {} \;
+
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
